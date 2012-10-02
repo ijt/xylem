@@ -72,17 +72,17 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/rosdep.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/xylem.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/rosdep.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/xylem.qhc"
 
 devhelp:
 	$(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) $(BUILDDIR)/devhelp
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/rosdep"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/rosdep"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/xylem"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/xylem"
 	@echo "# devhelp"
 
 epub:
@@ -132,5 +132,5 @@ doctest:
 upload: html
 	# set write permission for group so that everybody can overwrite existing files on the webserver
 	chmod -R g+w _build/html/
-	scp -pr _build/html/ wgs32.willowgarage.com:/var/www/www.ros.org/html/doc/api/rosdep2
+	scp -pr _build/html/ wgs32.willowgarage.com:/var/www/www.ros.org/html/doc/api/xylem2
 

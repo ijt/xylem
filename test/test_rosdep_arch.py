@@ -36,7 +36,7 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'arch'))
 
 def test_PacmanInstaller():
-    from rosdep2.platforms.arch import PacmanInstaller
+    from xylem2.platforms.arch import PacmanInstaller
 
     @patch.object(PacmanInstaller, 'get_packages_to_install')
     def test(mock_method):

@@ -1,6 +1,6 @@
-.TH "ROSDEP" "1" "January 12, 2012" "0.1" "rosdep"
+.TH "xylem" "1" "January 12, 2012" "0.1" "xylem"
 .SH NAME
-rosdep \- rosdep command
+xylem \- xylem command
 .
 .nr rst2man-indent-level 0
 .
@@ -32,18 +32,18 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .
 .SH SYNOPSIS
 .sp
-\fBrosdep\fP <\fIcommand\fP> [\fIoptions\fP] [\fIargs\fP]
+\fBxylem\fP <\fIcommand\fP> [\fIoptions\fP] [\fIargs\fP]
 .SH DESCRIPTION
 .sp
-The \fBrosdep\fP command helps you install external dependencies in an
+The \fBxylem\fP command helps you install external dependencies in an
 OS\-independent manner.  For example, what Debian packages do you need
 in order to get the OpenGL headers on Ubuntu? How about OS X? Fedora?
-rosdep can answer this question for your platform and install the
+xylem can answer this question for your platform and install the
 necessary package(s).
 .sp
-For more information on rosdep, see \fI\%http://ros.org/wiki/rosdep\fP.
+For more information on xylem, see \fI\%http://ros.org/wiki/xylem\fP.
 .sp
-Run "rosdep \-h" or "rosdep <command> \-h" to access the built\-in tool
+Run "xylem \-h" or "xylem <command> \-h" to access the built\-in tool
 documentation.
 .SH COMMANDS
 .sp
@@ -71,23 +71,23 @@ Display the dependency database for package(s).
 \fBkeys <packages>...\fP
 .INDENT 0.0
 .INDENT 3.5
-List the rosdep keys that the ROS packages depend on.
+List the xylem keys that the ROS packages depend on.
 .UNINDENT
 .UNINDENT
 .sp
-\fBwhat\-needs <rosdeps>...\fP
+\fBwhat\-needs <xylems>...\fP
 .INDENT 0.0
 .INDENT 3.5
-Print a list of packages that declare a rosdep on (at least
-one of) <rosdeps>
+Print a list of packages that declare a xylem on (at least
+one of) <xylems>
 .UNINDENT
 .UNINDENT
 .sp
-\fBwhere\-defined <rosdeps>...\fP
+\fBwhere\-defined <xylems>...\fP
 .INDENT 0.0
 .INDENT 3.5
-Print a list of YAML files that declare a rosdep on (at least
-one of) <rosdeps>
+Print a list of YAML files that declare a xylem on (at least
+one of) <xylems>
 .UNINDENT
 .UNINDENT
 .SH OPTIONS

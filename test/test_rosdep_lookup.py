@@ -32,8 +32,8 @@ import yaml
 
 from rospkg import RosPack, RosStack, ResourceNotFound
 
-BASE_URL = 'https://github.com/ros/rosdistro/raw/master/rosdep/base.yaml'
-PYTHON_URL = 'https://github.com/ros/rosdistro/raw/master/rosdep/python.yaml'
+BASE_URL = 'https://github.com/ros/rosdistro/raw/master/xylem/base.yaml'
+PYTHON_URL = 'https://github.com/ros/rosdistro/raw/master/xylem/python.yaml'
 
 def get_test_dir():
     return os.path.abspath(os.path.dirname(__file__))
@@ -47,18 +47,18 @@ def get_cache_dir():
     return p
 
 def create_test_SourcesListLoader():
-    from rosdep2.sources_list import SourcesListLoader
+    from xylem2.sources_list import SourcesListLoader
     return SourcesListLoader.create_default(sources_cache_dir=get_cache_dir(), verbose=True)
     
 def get_cache_raw():
-    cache_rosdep_path = os.path.join(get_cache_dir(), '0a12d6e7b0d47be9b76e7726720e4cb79528cbaa')
-    with open(cache_rosdep_path) as f:
+    cache_xylem_path = os.path.join(get_cache_dir(), '0a12d6e7b0d47be9b76e7726720e4cb79528cbaa')
+    with open(cache_xylem_path) as f:
         cache_raw = yaml.load(f.read())
     return cache_raw
 
 def get_cache_raw_python():
-    cache_rosdep_path = os.path.join(get_cache_dir(), 'f6f4ef95664e373cd4754501337fa217f5b55d91')
-    with open(cache_rosdep_path) as f:
+    cache_xylem_path = os.path.join(get_cache_dir(), 'f6f4ef95664e373cd4754501337fa217f5b55d91')
+    with open(cache_xylem_path) as f:
         cache_raw = yaml.load(f.read())
     return cache_raw
 
@@ -85,35 +85,35 @@ FAKE_TINYXML_RULE = """testtinyxml:
     yum:
       packages: tinyxml-devel"""
 
-def test_RosdepDefinition():
-    from rosdep2.lookup import RosdepDefinition, ResolutionError, InvalidData
+def test_xylemDefinition():
+    from xylem2.lookup import xylemDefinition, ResolutionError, InvalidData
     d = dict(a=1, b=2, c=3)
-    def1 = RosdepDefinition('d', d)
-    assert def1.rosdep_key == 'd'
+    def1 = xylemDefinition('d', d)
+    assert def1.xylem_key == 'd'
     assert def1.data == d
-    def2 = RosdepDefinition('d', d, 'file1.txt')
-    assert def2.rosdep_key == 'd'
+    def2 = xylemDefinition('d', d, 'file1.txt')
+    assert def2.xylem_key == 'd'
     assert def2.data == d
     assert def2.origin == 'file1.txt'
 
     # test get_rule_for_platform
     #  - test w/invalid data
     try:
-        RosdepDefinition('dbad', 'foo', 'bad.txt').get_rule_for_platform('ubuntu', 'hardy', ['apt'], 'apt')
+        xylemDefinition('dbad', 'foo', 'bad.txt').get_rule_for_platform('ubuntu', 'hardy', ['apt'], 'apt')
         assert False, "should have failed"
     except InvalidData: pass
     try:
-        RosdepDefinition('dbad', {'ubuntu': 1}, 'bad2.txt').get_rule_for_platform('ubuntu', 'hardy', ['apt'], 'apt')
+        xylemDefinition('dbad', {'ubuntu': 1}, 'bad2.txt').get_rule_for_platform('ubuntu', 'hardy', ['apt'], 'apt')
         assert False, "should have failed"
     except InvalidData: pass
     try:
-        RosdepDefinition('dbad', {'ubuntu': {'hardy': 1}}, 'bad2.txt').get_rule_for_platform('ubuntu', 'hardy', ['apt'], 'apt')
+        xylemDefinition('dbad', {'ubuntu': {'hardy': 1}}, 'bad2.txt').get_rule_for_platform('ubuntu', 'hardy', ['apt'], 'apt')
         assert False, "should have failed"
     except InvalidData: pass
 
     #  - test w/valid data
     d2 = yaml.load(FAKE_TINYXML_RULE)['testtinyxml']
-    definition = RosdepDefinition('d2', d2, 'file2.txt')
+    definition = xylemDefinition('d2', d2, 'file2.txt')
     #  - tripwire
     str(definition)
 
@@ -134,8 +134,8 @@ def test_RosdepDefinition():
         val = definition.get_rule_for_platform('ubuntu', 'hardy', ['apt', 'source', 'pip'], 'apt')
         assert False, "should have raised: %s"%(str(val))
     except ResolutionError as e:
-        assert e.rosdep_key == 'd2'
-        assert e.rosdep_data == d2
+        assert e.xylem_key == 'd2'
+        assert e.xylem_data == d2
         assert e.os_name == 'ubuntu'
         assert e.os_version == 'hardy'
         # tripwire
@@ -145,23 +145,23 @@ def test_RosdepDefinition():
         val = definition.get_rule_for_platform('fakeos', 'fakeversion', ['apt', 'source', 'pip'], 'apt')
         assert False, "should have raised: %s"%(str(val))
     except ResolutionError as e:
-        assert e.rosdep_key == 'd2'
-        assert e.rosdep_data == d2
+        assert e.xylem_key == 'd2'
+        assert e.xylem_data == d2
         assert e.os_name == 'fakeos'
         assert e.os_version == 'fakeversion'
         # tripwire
         str(e)
         
 
-def test_RosdepView_merge():
-    from rosdep2.model import RosdepDatabaseEntry
-    from rosdep2.lookup import RosdepView
+def test_xylemView_merge():
+    from xylem2.model import xylemDatabaseEntry
+    from xylem2.lookup import xylemView
     
-    # rosdep data must be dictionary of dictionaries
+    # xylem data must be dictionary of dictionaries
     data = dict(a=dict(x=1), b=dict(y=2), c=dict(z=3))
     
     # create empty view and test
-    view = RosdepView('common')
+    view = xylemView('common')
     assert view.keys() == []
     # - tripwire
     str(view)
@@ -174,21 +174,21 @@ def test_RosdepView_merge():
         assert 'notfound' in str(e)
     
     # merge into empty view
-    d = RosdepDatabaseEntry(data, [], 'origin')
+    d = xylemDatabaseEntry(data, [], 'origin')
     view.merge(d)
     assert set(view.keys()) == set(data.keys())
     for k, v in data.items():
         assert view.lookup(k).data == v, "%s vs. %s"%(view.lookup(k), v)
     
     # merge exact same data
-    d2 = RosdepDatabaseEntry(data, [], 'origin2')
+    d2 = xylemDatabaseEntry(data, [], 'origin2')
     view.merge(d2)
     assert set(view.keys()) == set(data.keys())
     for k, v in data.items():
         assert view.lookup(k).data == v
 
     # merge new for 'd', 'e'
-    d3 = RosdepDatabaseEntry(dict(d=dict(o=4), e=dict(p=5)), [], 'origin3')
+    d3 = xylemDatabaseEntry(dict(d=dict(o=4), e=dict(p=5)), [], 'origin3')
     view.merge(d3)
     assert set(view.keys()) == set(data.keys() + ['d', 'e'])
     for k, v in data.items():
@@ -197,7 +197,7 @@ def test_RosdepView_merge():
     assert view.lookup('e').data == dict(p=5)
 
     # merge different data for 'a'
-    d4 = RosdepDatabaseEntry(dict(a=dict(x=2)), [], 'origin4')
+    d4 = xylemDatabaseEntry(dict(a=dict(x=2)), [], 'origin4')
     # - first w/o override, should not bump
     view.merge(d4, override=False)
     assert view.lookup('a').data == dict(x=1), view.lookup('a').data
@@ -217,39 +217,39 @@ def test_RosdepView_merge():
     # - tripwire
     str(view)
 
-def test_RosdepLookup_get_rosdeps():
-    from rosdep2.loader import RosdepLoader
-    from rosdep2.lookup import RosdepLookup
+def test_xylemLookup_get_xylems():
+    from xylem2.loader import xylemLoader
+    from xylem2.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rospack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rospack,
                                              sources_loader=sources_loader)
     assert lookup.get_loader() is not None
-    assert isinstance(lookup.get_loader(), RosdepLoader)
-    print(lookup.get_rosdeps('empty_package'))
-    assert lookup.get_rosdeps('empty_package') == []
+    assert isinstance(lookup.get_loader(), xylemLoader)
+    print(lookup.get_xylems('empty_package'))
+    assert lookup.get_xylems('empty_package') == []
 
     try:
-        assert lookup.get_rosdeps('not a resource') == []
+        assert lookup.get_xylems('not a resource') == []
         assert False, "should have raised"
     except ResourceNotFound:
         pass
     
-    print(lookup.get_rosdeps('stack1_p1'))
-    assert set(lookup.get_rosdeps('stack1_p1')) == set(['stack1_dep1', 'stack1_p1_dep1', 'stack1_p1_dep2'])
-    assert set(lookup.get_rosdeps('stack1_p1', implicit=False)) == set(['stack1_dep1', 'stack1_p1_dep1', 'stack1_p1_dep2'])
+    print(lookup.get_xylems('stack1_p1'))
+    assert set(lookup.get_xylems('stack1_p1')) == set(['stack1_dep1', 'stack1_p1_dep1', 'stack1_p1_dep2'])
+    assert set(lookup.get_xylems('stack1_p1', implicit=False)) == set(['stack1_dep1', 'stack1_p1_dep1', 'stack1_p1_dep2'])
     
-    print(lookup.get_rosdeps('stack1_p2'))
-    assert set(lookup.get_rosdeps('stack1_p2', implicit=False)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p2_dep1']), set(lookup.get_rosdeps('stack1_p2'))
-    assert set(lookup.get_rosdeps('stack1_p2', implicit=True)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p1_dep1', 'stack1_p1_dep2', 'stack1_p2_dep1']), set(lookup.get_rosdeps('stack1_p2'))    
+    print(lookup.get_xylems('stack1_p2'))
+    assert set(lookup.get_xylems('stack1_p2', implicit=False)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p2_dep1']), set(lookup.get_xylems('stack1_p2'))
+    assert set(lookup.get_xylems('stack1_p2', implicit=True)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p1_dep1', 'stack1_p1_dep2', 'stack1_p2_dep1']), set(lookup.get_xylems('stack1_p2'))    
     
-def test_RosdepLookup_get_resources_that_need():
-    from rosdep2.lookup import RosdepLookup
+def test_xylemLookup_get_resources_that_need():
+    from xylem2.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rospack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rospack,
                                              sources_loader=sources_loader)
 
     assert lookup.get_resources_that_need('fake') ==  []
@@ -257,27 +257,27 @@ def test_RosdepLookup_get_resources_that_need():
     assert lookup.get_resources_that_need('stack1_dep2') ==  ['stack1_p2']
     assert lookup.get_resources_that_need('stack1_p1_dep1') ==  ['stack1_p1']
     
-def test_RosdepLookup_create_from_rospkg():
-    from rosdep2.lookup import RosdepLookup
+def test_xylemLookup_create_from_rospkg():
+    from xylem2.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
 
     # these are just tripwire, can't actually test as it depends on external env
-    lookup = RosdepLookup.create_from_rospkg()
+    lookup = xylemLookup.create_from_rospkg()
     
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack)
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack)
     assert rospack == lookup.loader._rospack
     
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack)
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack)
     assert rospack == lookup.loader._rospack
     assert rosstack == lookup.loader._rosstack
     
-def test_RosdepLookup_get_rosdep_view_for_resource():
-    from rosdep2.lookup import RosdepLookup
-    from rosdep2.rospkg_loader import DEFAULT_VIEW_KEY, RosPkgLoader
+def test_xylemLookup_get_xylem_view_for_resource():
+    from xylem2.lookup import xylemLookup
+    from xylem2.rospkg_loader import DEFAULT_VIEW_KEY, RosPkgLoader
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
                                              sources_loader=sources_loader)
     # assumption of our tests
     assert isinstance(lookup.loader, RosPkgLoader)
@@ -286,7 +286,7 @@ def test_RosdepLookup_get_rosdep_view_for_resource():
     cache_raw = get_cache_raw()
     py_cache_raw = get_cache_raw_python()
     # - first pass: no cache
-    ros_view = lookup.get_rosdep_view_for_resource('roscpp_fake')
+    ros_view = lookup.get_xylem_view_for_resource('roscpp_fake')
     libtool = ros_view.lookup('testlibtool')
     assert BASE_URL == libtool.origin
     assert cache_raw['testlibtool'] == libtool.data
@@ -295,21 +295,21 @@ def test_RosdepLookup_get_rosdep_view_for_resource():
     assert py_cache_raw['testpython'] == python.data
 
     # package not in stack, should return 
-    assert lookup.get_rosdep_view_for_resource('just_a_package').name is DEFAULT_VIEW_KEY
+    assert lookup.get_xylem_view_for_resource('just_a_package').name is DEFAULT_VIEW_KEY
     
-def test_RosdepLookup_get_rosdep_view():
-    from rosdep2.lookup import RosdepLookup
+def test_xylemLookup_get_xylem_view():
+    from xylem2.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
                                              sources_loader=sources_loader)
 
     # depends on nothing
     cache_raw = get_cache_raw()
     py_cache_raw = get_cache_raw_python()
     # - first pass: no cache
-    ros_view = lookup.get_rosdep_view('ros')
+    ros_view = lookup.get_xylem_view('ros')
     libtool = ros_view.lookup('testlibtool')
     assert BASE_URL == libtool.origin
     assert cache_raw['testlibtool'] == libtool.data
@@ -318,14 +318,14 @@ def test_RosdepLookup_get_rosdep_view():
     assert py_cache_raw['testpython'] == python.data, python.data
 
     # - second pass: with cache
-    ros_view = lookup.get_rosdep_view('ros')
+    ros_view = lookup.get_xylem_view('ros')
     libtool = ros_view.lookup('testlibtool')
     assert BASE_URL == libtool.origin
     assert cache_raw['testlibtool'] == libtool.data
     
     # depends on ros
-    stack1_view = lookup.get_rosdep_view('stack1')
-    stack1_rosdep_path = os.path.join(rosstack.get_path('stack1'), 'rosdep.yaml')
+    stack1_view = lookup.get_xylem_view('stack1')
+    stack1_xylem_path = os.path.join(rosstack.get_path('stack1'), 'xylem.yaml')
     
     # - make sure ros data is available 
     libtool = stack1_view.lookup('testlibtool')
@@ -335,12 +335,12 @@ def test_RosdepLookup_get_rosdep_view():
     assert PYTHON_URL == python.origin
     assert py_cache_raw['testpython'] == python.data
     
-def test_RosdepLookup_get_errors():
-    from rosdep2.lookup import RosdepLookup
+def test_xylemLookup_get_errors():
+    from xylem2.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     tree_dir = get_test_tree_dir()
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
                                              sources_loader=sources_loader)
 
     # shouldn't be any errors (yet)
@@ -352,12 +352,12 @@ def test_RosdepLookup_get_errors():
     #TODO: force errors.  Previous tests relied on bad stack views.
     #Now we need a bad sources cache.
     
-def test_RosdepLookup_get_views_that_define():
-    from rosdep2.lookup import RosdepLookup
+def test_xylemLookup_get_views_that_define():
+    from xylem2.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     tree_dir = get_test_tree_dir()
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
                                              sources_loader=sources_loader)
 
     val = lookup.get_views_that_define('testboost')
@@ -370,12 +370,12 @@ def test_RosdepLookup_get_views_that_define():
     entry = val[0]
     assert entry == (PYTHON_URL, PYTHON_URL), entry
     
-def test_RosdepLookup_resolve_all_errors():
-    from rosdep2.installers import InstallerContext
-    from rosdep2.lookup import RosdepLookup, ResolutionError
+def test_xylemLookup_resolve_all_errors():
+    from xylem2.installers import InstallerContext
+    from xylem2.lookup import xylemLookup, ResolutionError
     rospack, rosstack = get_test_rospkgs()
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
                                              sources_loader=sources_loader)
     # the installer context has nothing in it, lookups will fail
     installer_context = InstallerContext()
@@ -387,13 +387,13 @@ def test_RosdepLookup_resolve_all_errors():
     resolutions, errors = lookup.resolve_all(['not_a_resource'], installer_context)
     assert 'not_a_resource' in errors, errors
 
-def test_RosdepLookup_resolve_errors():
-    from rosdep2.installers import InstallerContext
-    from rosdep2.lookup import RosdepLookup, ResolutionError
+def test_xylemLookup_resolve_errors():
+    from xylem2.installers import InstallerContext
+    from xylem2.lookup import xylemLookup, ResolutionError
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
                                              sources_loader=sources_loader)
     # the installer context has nothing in it, lookups will fail
     installer_context = InstallerContext()
@@ -409,15 +409,15 @@ def test_RosdepLookup_resolve_errors():
         lookup.resolve('fakedep', 'rospack_fake', installer_context)
         assert False, "should have raised"
     except ResolutionError as e:
-        assert "Cannot locate rosdep definition" in str(e), str(e)
+        assert "Cannot locate xylem definition" in str(e), str(e)
 
-def test_RosdepLookup_resolve():
-    from rosdep2 import create_default_installer_context
-    from rosdep2.lookup import RosdepLookup
+def test_xylemLookup_resolve():
+    from xylem2 import create_default_installer_context
+    from xylem2.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
                                              sources_loader=sources_loader)
     installer_context = create_default_installer_context()
     installer_context.set_os_override('ubuntu', 'lucid')
@@ -440,13 +440,13 @@ def test_RosdepLookup_resolve():
         assert [] == dependencies
 
 
-def test_RosdepLookup_resolve_all():
-    from rosdep2 import create_default_installer_context
-    from rosdep2.lookup import RosdepLookup
+def test_xylemLookup_resolve_all():
+    from xylem2 import create_default_installer_context
+    from xylem2.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
-    lookup = RosdepLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
+    lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
                                              sources_loader=sources_loader)
     installer_context = create_default_installer_context()
     installer_context.set_os_override('ubuntu', 'lucid')

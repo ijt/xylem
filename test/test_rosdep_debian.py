@@ -35,7 +35,7 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'debian'))
 
 def test_dpkg_detect():
-    from rosdep2.platforms.debian import dpkg_detect
+    from xylem2.platforms.debian import dpkg_detect
     
     m = Mock()
     m.return_value = ''
@@ -57,7 +57,7 @@ def test_dpkg_detect():
 
 
 def test_AptInstaller():
-    from rosdep2.platforms.debian import AptInstaller
+    from xylem2.platforms.debian import AptInstaller
 
     @patch.object(AptInstaller, 'get_packages_to_install')
     def test(mock_method):

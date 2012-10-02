@@ -62,37 +62,37 @@ class DependencyGraph(defaultdict):
     def __init__(self):
         defaultdict.__init__(self, Resolution)
     
-    def detect_cycles(self, rosdep_key, traveled_keys):
+    def detect_cycles(self, xylem_key, traveled_keys):
         """
         Recursive function to detect cycles in the dependency graph.
 
-        :param rosdep_key: This is the rosdep key to use as the root in the cycle exploration.
-        :param traveled_keys: A list of rosdep_keys that have been traversed thus far.
+        :param xylem_key: This is the xylem key to use as the root in the cycle exploration.
+        :param traveled_keys: A list of xylem_keys that have been traversed thus far.
 
-        :raises: :exc:`AssertionError` if the rosdep_key is in the traveled keys, indicating a cycle has occurred.
+        :raises: :exc:`AssertionError` if the xylem_key is in the traveled keys, indicating a cycle has occurred.
         """
-        assert rosdep_key not in traveled_keys, "A cycle in the dependency graph occurred with key `%s`."%rosdep_key
-        traveled_keys.append(rosdep_key)
-        for dependency in self[rosdep_key]['dependencies']:
+        assert xylem_key not in traveled_keys, "A cycle in the dependency graph occurred with key `%s`."%xylem_key
+        traveled_keys.append(xylem_key)
+        for dependency in self[xylem_key]['dependencies']:
             self.detect_cycles(dependency, traveled_keys)
 
     def validate(self):
         """
-        Performs validations on the dependency graph, like cycle detection and invalid rosdep key detection. 
+        Performs validations on the dependency graph, like cycle detection and invalid xylem key detection. 
 
         :raises: :exc:`AssertionError` if a cycle is detected.
-        :raises: :exc:`KeyError` if an invalid rosdep_key is found in the dependency graph.
+        :raises: :exc:`KeyError` if an invalid xylem_key is found in the dependency graph.
         """
-        for rosdep_key in self:
+        for xylem_key in self:
             # Ensure all dependencies have definitions
-            # i.e.: Ensure we aren't pointing to invalid rosdep keys
-            for dependency in self[rosdep_key]['dependencies']:
+            # i.e.: Ensure we aren't pointing to invalid xylem keys
+            for dependency in self[xylem_key]['dependencies']:
                 if not self.has_key(dependency):
-                    raise KeyError("Invalid Graph Structure: rosdep key `%s` does not exist in the dictionary of resolutions."%dependency)
+                    raise KeyError("Invalid Graph Structure: xylem key `%s` does not exist in the dictionary of resolutions."%dependency)
                 self[dependency]['is_root'] = False
         # Check each entry for cyclical dependencies
-        for rosdep_key in self:
-            self.detect_cycles(rosdep_key, [])
+        for xylem_key in self:
+            self.detect_cycles(xylem_key, [])
 
     def get_ordered_dependency_list(self):
         """
@@ -103,15 +103,15 @@ class DependencyGraph(defaultdict):
          like ``apt`` or ``homebrew``.  *install_keys* are something like ``boost`` or ``ros-fuerte-ros_comm``.
 
         :raises: :exc:`AssertionError` if a cycle is detected.
-        :raises: :exc:`KeyError` if an invalid rosdep_key is found in the dependency graph.
+        :raises: :exc:`KeyError` if an invalid xylem_key is found in the dependency graph.
         """
         # Validate the graph
         self.validate()
         # Generate the dependency list
         dep_list = []
-        for rosdep_key in self:
-            if self[rosdep_key]['is_root']:
-                dep_list.extend(self.__get_ordered_uninstalled(rosdep_key))
+        for xylem_key in self:
+            if self[xylem_key]['is_root']:
+                dep_list.extend(self.__get_ordered_uninstalled(xylem_key))
         # Make the list unique and remove empty entries
         result = []
         for item in dep_list:

@@ -36,7 +36,7 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'cygwin'))
 
 def test_AptCygInstaller():
-    from rosdep2.platforms.cygwin import AptCygInstaller
+    from xylem2.platforms.cygwin import AptCygInstaller
 
     @patch.object(AptCygInstaller, 'get_packages_to_install')
     def test(mock_method):

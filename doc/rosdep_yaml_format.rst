@@ -1,21 +1,21 @@
-.. _rosdep_yaml:
+.. _xylem_yaml:
 
-rosdep YAML format
+xylem YAML format
 ''''''''''''''''''
 
-The current rosdep YAML format specification was introduced in `REP 111 <http://ros.org/reps/rep-0111.html>`_.  
+The current xylem YAML format specification was introduced in `REP 111 <http://ros.org/reps/rep-0111.html>`_.  
 
 
 Specification
 =============
 
-rosdep supports both a *simple* and *versioned* syntax.
+xylem supports both a *simple* and *versioned* syntax.
 
 
  * Simple 
     ::
 
-        ROSDEP_NAME:
+        xylem_NAME:
           OS_NAME1: 
             PACKAGE_MANAGER1:
               PACKAGE_ARGUMENTS_A
@@ -26,7 +26,7 @@ rosdep supports both a *simple* and *versioned* syntax.
  * Versioned
     ::
 
-        ROSDEP_NAME:
+        xylem_NAME:
           OS_NAME1:
             OS_VERSION1:  
               PACKAGE_MANAGER1:
@@ -37,10 +37,10 @@ rosdep supports both a *simple* and *versioned* syntax.
 
 The names above resolve as follows:
 
- * ``ROSDEP_NAME`` is the name referred to by manifest files. Examples: ``log4cxx`` or ``gtest``.
+ * ``xylem_NAME`` is the name referred to by manifest files. Examples: ``log4cxx`` or ``gtest``.
  * ``OS_NAME`` is the name of an OS.  Examples: ``ubuntu``, ``osx``, ``fedora``, ``debian``, or ``windows``.  
  * ``OS_VERSION`` (*optional*) is the name of specific versions in the OS. Examples: ``lucid`` or ``squeeze``. If no ``OS_VERSION`` is specified, the rule is assumed to apply to all versions.
- * ``PACKAGE_MANAGER`` (*optional in ROS Electric, required in ROS Fuerte*) is a key to select which package manager to use for this rosdep.  Examples: ``apt``, ``easy_install``, ``macports``.  
+ * ``PACKAGE_MANAGER`` (*optional in ROS Electric, required in ROS Fuerte*) is a key to select which package manager to use for this xylem.  Examples: ``apt``, ``easy_install``, ``macports``.  
  * ``PACKAGE_ARGUMENT`` is free-form YAML that is be passed to the handler for the specified ``PACKAGE_MANAGER``.
 
 
@@ -51,7 +51,7 @@ For Ubuntu the default package manager is apt.  An example for the simple syntax
 
 ::
     
-    rosdep_name:
+    xylem_name:
       ubuntu: 
         apt:
           packages: [ debian-package-name, other-debian-package-name]
@@ -60,7 +60,7 @@ or versioned as follows:
 
 ::
     
-    rosdep_name:
+    xylem_name:
       ubuntu: 
         lucid:
           apt:
@@ -139,7 +139,7 @@ optional in the ROS Electric case.  As both ``PACKAGE_MANAGER`` and
 either ``OS_VERSION`` or ``PACKAGE_MANAGER`` is specified, but not
 both.  
 
-In this ambiguous case, rosdep first interprets the key as a
+In this ambiguous case, xylem first interprets the key as a
 ``PACKAGE_MANAGER``.  If this test fails, it will be interpreted as an
 ``OS_VERSION``.  Developers should exercise caution in keeping
 ``OS_VERSION`` and ``PACKAGE_MANAGER`` keys globally distinct.

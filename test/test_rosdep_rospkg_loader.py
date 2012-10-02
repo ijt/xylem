@@ -49,11 +49,11 @@ def get_rospkg():
 def test_RosPkgLoader():
     from rospkg import ResourceNotFound
 
-    from rosdep2.model import RosdepDatabase
-    from rosdep2.rospkg_loader import RosPkgLoader, DEFAULT_VIEW_KEY
-    from rosdep2.loader import InvalidData
+    from xylem2.model import xylemDatabase
+    from xylem2.rospkg_loader import RosPkgLoader, DEFAULT_VIEW_KEY
+    from xylem2.loader import InvalidData
     
-    # Due to rosdep 2/REP 125 changes, this test is a bit overbuilt.
+    # Due to xylem 2/REP 125 changes, this test is a bit overbuilt.
     # All stacks return the same.
     
     # tripwire
@@ -69,36 +69,36 @@ def test_RosPkgLoader():
     assert loader._rosstack == rosstack    
 
     # test with mock db
-    rosdep_db = Mock(spec=RosdepDatabase)
-    rosdep_db.is_loaded.return_value = False
+    xylem_db = Mock(spec=xylemDatabase)
+    xylem_db.is_loaded.return_value = False
 
-    # test with no rosdep.yaml stack
-    loader.load_view('empty', rosdep_db)
-    rosdep_db.is_loaded.assert_called_with('empty')
-    rosdep_db.set_view_data.assert_called_with('empty', {}, [], '<nodata>')
+    # test with no xylem.yaml stack
+    loader.load_view('empty', xylem_db)
+    xylem_db.is_loaded.assert_called_with('empty')
+    xylem_db.set_view_data.assert_called_with('empty', {}, [], '<nodata>')
 
     # test invalid stack
     try:
-        loader.load_view('does not exist', rosdep_db)
+        loader.load_view('does not exist', xylem_db)
         assert False, "should have raised"
     except ResourceNotFound as e:
         pass
 
     # Test with default view key
-    loader.load_view(DEFAULT_VIEW_KEY, rosdep_db)
-    rosdep_db.set_view_data.assert_called_with(DEFAULT_VIEW_KEY, {}, [], '<nodata>')
+    loader.load_view(DEFAULT_VIEW_KEY, xylem_db)
+    xylem_db.set_view_data.assert_called_with(DEFAULT_VIEW_KEY, {}, [], '<nodata>')
     
     # test with complicated ros stack.  
-    loader.load_view('ros', rosdep_db)
-    rosdep_db.is_loaded.assert_called_with('ros')
-    rosdep_db.set_view_data.assert_called_with('ros', {}, [], '<nodata>')
+    loader.load_view('ros', xylem_db)
+    xylem_db.is_loaded.assert_called_with('ros')
+    xylem_db.set_view_data.assert_called_with('ros', {}, [], '<nodata>')
 
     # test call on db that is already loaded
-    rosdep_db.reset_mock()
-    rosdep_db.is_loaded.return_value = True
-    loader.load_view('ros', rosdep_db)
-    rosdep_db.is_loaded.assert_called_with('ros')
-    assert rosdep_db.set_view_data.call_args_list == []
+    xylem_db.reset_mock()
+    xylem_db.is_loaded.return_value = True
+    loader.load_view('ros', xylem_db)
+    xylem_db.is_loaded.assert_called_with('ros')
+    assert xylem_db.set_view_data.call_args_list == []
 
     # test get_view_key, always the same return value
     assert loader.get_view_key('stack1_p1') == DEFAULT_VIEW_KEY
@@ -111,9 +111,9 @@ def test_RosPkgLoader():
 def test_RosPkgLoader_with_underlay_key():
     from rospkg import ResourceNotFound
 
-    from rosdep2.model import RosdepDatabase
-    from rosdep2.rospkg_loader import RosPkgLoader, DEFAULT_VIEW_KEY
-    from rosdep2.loader import InvalidData
+    from xylem2.model import xylemDatabase
+    from xylem2.rospkg_loader import RosPkgLoader, DEFAULT_VIEW_KEY
+    from xylem2.loader import InvalidData
     
     # configure inside of the test tree
     rospack, rosstack = get_rospkg()
@@ -123,32 +123,32 @@ def test_RosPkgLoader_with_underlay_key():
     assert loader._rosstack == rosstack    
 
     # test with mock db
-    rosdep_db = Mock(spec=RosdepDatabase)
-    rosdep_db.is_loaded.return_value = False
+    xylem_db = Mock(spec=xylemDatabase)
+    xylem_db.is_loaded.return_value = False
 
-    # test with no rosdep.yaml stack
-    loader.load_view('empty', rosdep_db)
-    rosdep_db.is_loaded.assert_called_with('empty')
-    rosdep_db.set_view_data.assert_called_with('empty', {}, ['underlay-key'], '<nodata>')
+    # test with no xylem.yaml stack
+    loader.load_view('empty', xylem_db)
+    xylem_db.is_loaded.assert_called_with('empty')
+    xylem_db.set_view_data.assert_called_with('empty', {}, ['underlay-key'], '<nodata>')
 
     # test invalid stack
     try:
-        loader.load_view('does not exist', rosdep_db)
+        loader.load_view('does not exist', xylem_db)
         assert False, "should have raised"
     except ResourceNotFound as e:
         pass
 
     # test with complicated ros stack.  
-    loader.load_view('ros', rosdep_db)
-    rosdep_db.is_loaded.assert_called_with('ros')
-    rosdep_db.set_view_data.assert_called_with('ros', {}, ['underlay-key'], '<nodata>')
+    loader.load_view('ros', xylem_db)
+    xylem_db.is_loaded.assert_called_with('ros')
+    xylem_db.set_view_data.assert_called_with('ros', {}, ['underlay-key'], '<nodata>')
 
     # test call on db that is already loaded
-    rosdep_db.reset_mock()
-    rosdep_db.is_loaded.return_value = True
-    loader.load_view('ros', rosdep_db)
-    rosdep_db.is_loaded.assert_called_with('ros')
-    assert rosdep_db.set_view_data.call_args_list == []
+    xylem_db.reset_mock()
+    xylem_db.is_loaded.return_value = True
+    loader.load_view('ros', xylem_db)
+    xylem_db.is_loaded.assert_called_with('ros')
+    assert xylem_db.set_view_data.call_args_list == []
 
     # test get_view_key
     assert loader.get_view_key('stack1_p1') == DEFAULT_VIEW_KEY
@@ -159,7 +159,7 @@ def test_RosPkgLoader_with_underlay_key():
     except ResourceNotFound: pass
 
 def test_RosPkgLoader_get_loadable():
-    from rosdep2.rospkg_loader import RosPkgLoader
+    from xylem2.rospkg_loader import RosPkgLoader
     
     rospack, rosstack = get_rospkg()
     loader = RosPkgLoader(rospack, rosstack)

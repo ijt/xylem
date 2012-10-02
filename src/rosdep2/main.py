@@ -29,7 +29,7 @@
 # Author Tully Foote/tfoote@willowgarage.com
 
 """
-Command-line interface to rosdep library
+Command-line interface to xylem library
 """
 
 from __future__ import print_function
@@ -45,9 +45,9 @@ import rospkg
 
 from . import create_default_installer_context, get_default_installer
 from . import __version__
-from .core import RosdepInternalError, InstallFailed, UnsupportedOs, InvalidData
-from .installers import RosdepInstaller
-from .lookup import RosdepLookup, ResolutionError
+from .core import xylemInternalError, InstallFailed, UnsupportedOs, InvalidData
+from .installers import xylemInstaller
+from .lookup import xylemLookup, ResolutionError
 from .rospkg_loader import DEFAULT_VIEW_KEY
 from .sources_list import update_sources_list, get_sources_cache_dir,\
      download_default_sources_list, SourcesListLoader,CACHE_INDEX,\
@@ -57,63 +57,63 @@ from .sources_list import update_sources_list, get_sources_cache_dir,\
 class UsageError(Exception):
     pass
 
-_usage = """usage: rosdep [options] <command> <args>
+_usage = """usage: xylem [options] <command> <args>
 
 Commands:
 
-rosdep check <stacks-and-packages>...
+xylem check <stacks-and-packages>...
   check if the dependencies of package(s) have been met.
 
-rosdep install <stacks-and-packages>...
+xylem install <stacks-and-packages>...
   generate a bash script and then execute it.
 
-rosdep db
+xylem db
   generate the dependency database and print it to the console.
 
-rosdep init
-  initialize rosdep sources in /etc/ros/rosdep.  May require sudo.
+xylem init
+  initialize xylem sources in /etc/ros/xylem.  May require sudo.
   
-rosdep keys <stacks-and-packages>...
-  list the rosdep keys that the packages depend on.
+xylem keys <stacks-and-packages>...
+  list the xylem keys that the packages depend on.
 
-rosdep resolve <rosdeps>
-  resolve <rosdeps> to system dependencies
+xylem resolve <xylems>
+  resolve <xylems> to system dependencies
   
-rosdep update
-  update the local rosdep database based on the rosdep sources.
+xylem update
+  update the local xylem database based on the xylem sources.
   
-rosdep what-needs <rosdeps>...
-  print a list of packages that declare a rosdep on (at least
-  one of) <rosdeps>
+xylem what-needs <xylems>...
+  print a list of packages that declare a xylem on (at least
+  one of) <xylems>
 
-rosdep where-defined <rosdeps>...
-  print a list of yaml files that declare a rosdep on (at least
-  one of) <rosdeps>
+xylem where-defined <xylems>...
+  print a list of yaml files that declare a xylem on (at least
+  one of) <xylems>
 """
 
-def _get_default_RosdepLookup(options):
+def _get_default_xylemLookup(options):
     """
     Helper routine for converting command-line options into
-    appropriate RosdepLookup instance.
+    appropriate xylemLookup instance.
     """
     os_override = convert_os_override_option(options.os_override)
     sources_loader = SourcesListLoader.create_default(sources_cache_dir=options.sources_cache_dir,
                                                       os_override=os_override,
                                                       verbose=options.verbose)
-    lookup = RosdepLookup.create_from_rospkg(sources_loader=sources_loader)
+    lookup = xylemLookup.create_from_rospkg(sources_loader=sources_loader)
     lookup.verbose = options.verbose
     return lookup
 
-def rosdep_main(args=None):
+def xylem_main(args=None):
     if args is None:
         args = sys.argv[1:]
     try:
-        exit_code = _rosdep_main(args)
+        exit_code = _xylem_main(args)
         if exit_code not in [0, None]:
             sys.exit(exit_code)
     except rospkg.ResourceNotFound as e:
         print("""
-ERROR: Rosdep cannot find all required resources to answer your query
+ERROR: xylem cannot find all required resources to answer your query
 %s
 """%(error_to_human_readable(e)), file=sys.stderr)
         sys.exit(1)
@@ -121,11 +121,11 @@ ERROR: Rosdep cannot find all required resources to answer your query
         print(_usage, file=sys.stderr)
         print("ERROR: %s"%(str(e)), file=sys.stderr)
         sys.exit(os.EX_USAGE)
-    except RosdepInternalError as e:
+    except xylemInternalError as e:
         print("""
-ERROR: Rosdep experienced an internal error.
-Please go to the rosdep page [1] and file a bug report with the message below.
-[1] : http://www.ros.org/wiki/rosdep
+ERROR: xylem experienced an internal error.
+Please go to the xylem page [1] and file a bug report with the message below.
+[1] : http://www.ros.org/wiki/xylem
 
 %s
 """%(e.message), file=sys.stderr)
@@ -142,9 +142,9 @@ ERROR: %s
         sys.exit(1)
     except Exception as e:
         print("""
-ERROR: Rosdep experienced an internal error: %s
-Please go to the rosdep page [1] and file a bug report with the stack trace below.
-[1] : http://www.ros.org/wiki/rosdep
+ERROR: xylem experienced an internal error: %s
+Please go to the xylem page [1] and file a bug report with the stack trace below.
+[1] : http://www.ros.org/wiki/xylem
 
 %s
 """%(e, traceback.format_exc(e)), file=sys.stderr)
@@ -163,20 +163,20 @@ def check_for_sources_list_init(sources_cache_dir):
     if os.path.exists(filename):
         return
     else:
-        commands.append('rosdep update')
+        commands.append('xylem update')
 
     sources_list_dir = get_sources_list_dir()
     if not os.path.exists(sources_list_dir):
-        commands.insert(0, 'sudo rosdep init')
+        commands.insert(0, 'sudo xylem init')
     else:
         filelist = [f for f in os.listdir(sources_list_dir) if f.endswith('.list')]    
         if not filelist:
-            commands.insert(0, 'sudo rosdep init')
+            commands.insert(0, 'sudo xylem init')
 
     if commands:
         commands = '\n'.join(["    %s"%c for c in commands])
         print("""
-ERROR: your rosdep installation has not been initialized yet.  Please run:
+ERROR: your xylem installation has not been initialized yet.  Please run:
         
 %s
 """%(commands), file=sys.stderr)
@@ -184,11 +184,11 @@ ERROR: your rosdep installation has not been initialized yet.  Please run:
     else:
         return True
     
-def _rosdep_main(args):
+def _xylem_main(args):
     # sources cache dir is our local database.  
     default_sources_cache = get_sources_cache_dir()
 
-    parser = OptionParser(usage=_usage, prog='rosdep')
+    parser = OptionParser(usage=_usage, prog='xylem')
     parser.add_option("--os", dest="os_override", default=None, 
                       metavar="OS_NAME:OS_VERSION", help="Override OS name and version (colon-separated), e.g. ubuntu:lucid")
     parser.add_option("-c", "--sources-cache-dir", dest="sources_cache_dir", default=default_sources_cache,
@@ -205,7 +205,7 @@ def _rosdep_main(args):
                       action="store_true", help="Simulate install")
     parser.add_option("-r", dest="robust", default=False, 
                       action="store_true", help="Continue installing despite errors.")
-    parser.add_option("-a", "--all", dest="rosdep_all", default=False, 
+    parser.add_option("-a", "--all", dest="xylem_all", default=False, 
                       action="store_true", help="select all packages")
     parser.add_option("-n", dest="recursive", default=True, 
                       action="store_false", help="Do not consider implicit/recursive dependencies.  Only valid with 'keys', 'check', and 'install' commands.")
@@ -224,8 +224,8 @@ def _rosdep_main(args):
 
     if not command in ['init', 'update']:
         check_for_sources_list_init(options.sources_cache_dir)
-    if command in _command_rosdep_args:
-        return _rosdep_args_handler(command, parser, options, args)
+    if command in _command_xylem_args:
+        return _xylem_args_handler(command, parser, options, args)
     elif command in _command_no_args:
         return _no_args_handler(command, parser, options, args)        
     else:
@@ -237,10 +237,10 @@ def _no_args_handler(command, parser, options, args):
     else:
         return command_handlers[command](options)
     
-def _rosdep_args_handler(command, parser, options, args):
+def _xylem_args_handler(command, parser, options, args):
 
-    # rosdep keys as args
-    if options.rosdep_all:
+    # xylem keys as args
+    if options.xylem_all:
         parser.error("-a, --all is not a valid option for this command")
     elif len(args) < 1:
         parser.error("Please enter arguments for '%s'"%command)
@@ -252,10 +252,10 @@ def _package_args_handler(command, parser, options, args):
     # - overrides to enable testing
     rospack = rospkg.RosPack()
     rosstack = rospkg.RosStack()
-    lookup = _get_default_RosdepLookup(options)
+    lookup = _get_default_xylemLookup(options)
     loader = lookup.get_loader()
     
-    if options.rosdep_all:
+    if options.xylem_all:
         if args:
             parser.error("cannot specify additional arguments with -a")
         else:
@@ -324,12 +324,12 @@ def command_init(options):
         with open(path, 'w') as f:
             f.write(data)
         print("Wrote %s"%(path))
-        print("Recommended: please run\n\n\trosdep update\n")
+        print("Recommended: please run\n\n\txylem update\n")
     except IOError as e:
         print("ERROR: cannot create %s:\n\t%s"%(path, e), file=sys.stderr)
         return 2
     except OSError as e:
-        print("ERROR: cannot create %s:\n\t%s\nPerhaps you need to run 'sudo rosdep init' instead"%(path, e), file=sys.stderr)
+        print("ERROR: cannot create %s:\n\t%s\nPerhaps you need to run 'sudo xylem init' instead"%(path, e), file=sys.stderr)
         return 3
     
 def command_update(options):
@@ -340,7 +340,7 @@ def command_update(options):
     sources_list_dir = get_sources_list_dir()
     filelist = [f for f in os.listdir(sources_list_dir) if f.endswith('.list')]    
     if not filelist:
-        print("ERROR: no data sources in %s\n\nPlease initialize your rosdep with\n\n\tsudo rosdep init\n"%sources_list_dir, file=sys.stderr)
+        print("ERROR: no data sources in %s\n\nPlease initialize your xylem with\n\n\tsudo xylem init\n"%sources_list_dir, file=sys.stderr)
         return 1
     try:
         print("reading in sources list data from %s"%(sources_list_dir))
@@ -353,20 +353,20 @@ def command_update(options):
         print("ERROR: error loading sources list:\n\t%s"%(e), file=sys.stderr)
     
 def command_keys(lookup, packages, options):
-    lookup = _get_default_RosdepLookup(options)
-    rosdep_keys = []
+    lookup = _get_default_xylemLookup(options)
+    xylem_keys = []
     for package_name in packages:
-        rosdep_keys.extend(lookup.get_rosdeps(package_name, implicit=options.recursive))
+        xylem_keys.extend(lookup.get_xylems(package_name, implicit=options.recursive))
 
     _print_lookup_errors(lookup)
-    print('\n'.join(set(rosdep_keys)))
+    print('\n'.join(set(xylem_keys)))
 
 def command_check(lookup, packages, options):
     verbose = options.verbose
     
     installer_context = create_default_installer_context(verbose=verbose)
     configure_installer_context_os(installer_context, options)
-    installer = RosdepInstaller(installer_context, lookup)
+    installer = xylemInstaller(installer_context, lookup)
 
     uninstalled, errors = installer.get_uninstalled(packages, implicit=options.recursive, verbose=verbose)
 
@@ -407,7 +407,7 @@ def command_install(lookup, packages, options):
     # setup installer
     installer_context = create_default_installer_context(verbose=options.verbose)
     configure_installer_context_os(installer_context, options)
-    installer = RosdepInstaller(installer_context, lookup)
+    installer = xylemInstaller(installer_context, lookup)
 
     if options.reinstall:
         if options.verbose:
@@ -424,19 +424,19 @@ def command_install(lookup, packages, options):
         print("uninstalled dependencies are: [%s]"%(', '.join([', '.join(pkg) for pkg in [v for k,v in uninstalled]])))
         
     if errors:
-        print("ERROR: the following packages/stacks could not have their rosdep keys resolved\nto system dependencies:", file=sys.stderr)
-        for rosdep_key, error in errors.iteritems():
-            print("%s: %s"%(rosdep_key, error_to_human_readable(error)), file=sys.stderr)
+        print("ERROR: the following packages/stacks could not have their xylem keys resolved\nto system dependencies:", file=sys.stderr)
+        for xylem_key, error in errors.iteritems():
+            print("%s: %s"%(xylem_key, error_to_human_readable(error)), file=sys.stderr)
         return 1
     try:
         installer.install(uninstalled, **install_options)
         if not options.simulate:
-            print("#All required rosdeps installed successfully")
+            print("#All required xylems installed successfully")
         return 0
     except KeyError as e:
-        raise RosdepInternalError(e)
+        raise xylemInternalError(e)
     except InstallFailed as e:
-        print("ERROR: the following rosdeps failed to install", file=sys.stderr)
+        print("ERROR: the following xylems failed to install", file=sys.stderr)
         print('\n'.join(["  %s: %s"%(k, m) for k,m in e.failures]), file=sys.stderr)
         return 1
 
@@ -444,19 +444,19 @@ def _compute_depdb_output(lookup, packages, options):
     installer_context = create_default_installer_context(verbose=options.verbose)
     os_name, os_version = _detect_os(installer_context, options)
     
-    output = "Rosdep dependencies for operating system %s version %s "%(os_name, os_version)
+    output = "xylem dependencies for operating system %s version %s "%(os_name, os_version)
     for stack_name in stacks:
         output += "\nSTACK: %s\n"%(stack_name)
-        view = lookup.get_stack_rosdep_view(stack_name)
-        for rosdep in view.keys():
-            definition = view.lookup(rosdep)
+        view = lookup.get_stack_xylem_view(stack_name)
+        for xylem in view.keys():
+            definition = view.lookup(xylem)
             resolved = resolve_definition(definition, os_name, os_version)
-            output = output + "<<<< %s -> %s >>>>\n"%(rosdep, resolved)
+            output = output + "<<<< %s -> %s >>>>\n"%(xylem, resolved)
     return output
     
 def command_db(options):
     # exact same setup logic as command_resolve, should possibly combine
-    lookup = _get_default_RosdepLookup(options)
+    lookup = _get_default_xylemLookup(options)
     installer_context = create_default_installer_context(verbose=options.verbose)
     configure_installer_context_os(installer_context, options)
     os_name, os_version = installer_context.get_os_name_and_version()
@@ -472,20 +472,20 @@ def command_db(options):
     errors = []
     print("DB [key -> resolution]")
     # db does not leverage the resource-based API
-    view = lookup.get_rosdep_view(DEFAULT_VIEW_KEY, verbose=options.verbose)
-    for rosdep_name in view.keys():
+    view = lookup.get_xylem_view(DEFAULT_VIEW_KEY, verbose=options.verbose)
+    for xylem_name in view.keys():
         try:
-            d = view.lookup(rosdep_name)
+            d = view.lookup(xylem_name)
             inst_key, rule = d.get_rule_for_platform(os_name, os_version, installer_keys, default_key)
             resolved = installer.resolve(rule)
             resolved_str = " ".join(resolved)
-            print ("%s -> %s"%(rosdep_name, resolved_str))
+            print ("%s -> %s"%(xylem_name, resolved_str))
         except ResolutionError as e:
             errors.append(e)
 
     #TODO: add command-line option for users to be able to see this.
     #This is useful for platform bringup, but useless for most users
-    #as the rosdep db contains numerous, platform-specific keys.
+    #as the xylem db contains numerous, platform-specific keys.
     if 0: 
         for error in errors:
             print("WARNING: %s"%(error_to_human_readable(error)), file=sys.stderr)
@@ -498,19 +498,19 @@ def _print_lookup_errors(lookup):
             print("WARNING: %s"%(str(error)), file=sys.stderr)
             
 def command_what_needs(args, options):
-    lookup = _get_default_RosdepLookup(options)
+    lookup = _get_default_xylemLookup(options)
     packages = []
-    for rosdep_name in args:
-        packages.extend(lookup.get_resources_that_need(rosdep_name))
+    for xylem_name in args:
+        packages.extend(lookup.get_resources_that_need(xylem_name))
 
     _print_lookup_errors(lookup)
     print('\n'.join(set(packages)))
     
 def command_where_defined(args, options):
-    lookup = _get_default_RosdepLookup(options)
+    lookup = _get_default_xylemLookup(options)
     locations = []
-    for rosdep_name in args:
-        locations.extend(lookup.get_views_that_define(rosdep_name))
+    for xylem_name in args:
+        locations.extend(lookup.get_views_that_define(xylem_name))
 
     _print_lookup_errors(lookup)
     if locations:
@@ -522,7 +522,7 @@ def command_where_defined(args, options):
         return 1
 
 def command_resolve(args, options):
-    lookup = _get_default_RosdepLookup(options)
+    lookup = _get_default_xylemLookup(options)
     installer_context = create_default_installer_context(verbose=options.verbose)
     configure_installer_context_os(installer_context, options)
 
@@ -530,13 +530,13 @@ def command_resolve(args, options):
             os_name, os_version = get_default_installer(installer_context=installer_context,
                                                         verbose=options.verbose)
     invalid_key_errors = []
-    for rosdep_name in args:
+    for xylem_name in args:
         if len(args) > 1:
-            print("#ROSDEP[%s]"%rosdep_name)
+            print("#xylem[%s]"%xylem_name)
 
-        view = lookup.get_rosdep_view(DEFAULT_VIEW_KEY, verbose=options.verbose)
+        view = lookup.get_xylem_view(DEFAULT_VIEW_KEY, verbose=options.verbose)
         try:
-            d = view.lookup(rosdep_name)
+            d = view.lookup(xylem_name)
         except KeyError as e:
             invalid_key_errors.append(e)
             continue
@@ -548,7 +548,7 @@ def command_resolve(args, options):
         print (" ".join([str(r) for r in resolved]))
 
     for error in invalid_key_errors:
-        print("ERROR: no rosdep rule for %s"%(error), file=sys.stderr)        
+        print("ERROR: no xylem rule for %s"%(error), file=sys.stderr)        
 
     for error in lookup.get_errors():
         print("WARNING: %s"%(error_to_human_readable(error)), file=sys.stderr)
@@ -573,8 +573,8 @@ command_handlers = {
     'depdb': command_db, 
     }
 
-# commands that accept rosdep names as args
-_command_rosdep_args = ['what-needs', 'what_needs', 'where-defined', 'where_defined', 'resolve']
+# commands that accept xylem names as args
+_command_xylem_args = ['what-needs', 'what_needs', 'where-defined', 'where_defined', 'resolve']
 # commands that take no args
 _command_no_args = ['update', 'init', 'db']
 

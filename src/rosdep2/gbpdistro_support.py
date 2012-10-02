@@ -31,7 +31,7 @@ def get_owner_name(url):
     If the url is not a valid github url it returns the default `ros`.
 
     This information is used to set the homebrew tap name, see:
-    https://github.com/ros/rosdep/pull/17
+    https://github.com/ros/xylem/pull/17
 
     :returns: The github account in the given gbpdistro url
     """
@@ -46,7 +46,7 @@ def get_owner_name(url):
 
 
 # For compatability url defaults to ''
-def gbprepo_to_rosdep_data(gbpdistro_data, targets_data, url=''):
+def gbprepo_to_xylem_data(gbpdistro_data, targets_data, url=''):
     """
     :raises: :exc:`InvalidData`
     """
@@ -70,28 +70,28 @@ def gbprepo_to_rosdep_data(gbpdistro_data, targets_data, url=''):
             # take the first match
             target_data = targets_data[release_name]
 
-        # compute the rosdep data for each repo
-        rosdep_data = {}
+        # compute the xylem data for each repo
+        xylem_data = {}
         gbp_repos = gbpdistro_data['repositories']
         # Ensure gbp_repos is a dict
         if type(gbp_repos) != dict:
             raise InvalidData("invalid repo spec in gbpdistro data: " + str(gbp_repos)
                             + ". Invalid repositories entry, must be dict.")
-        for rosdep_key, repo in gbp_repos.items():
+        for xylem_key, repo in gbp_repos.items():
             if type(repo) != dict:
                 raise InvalidData("invalid repo spec in gbpdistro data: "
                                 + str(repo))
 
-            for pkg in repo.get('packages', {rosdep_key: None}):
-                rosdep_data[pkg] = {}
+            for pkg in repo.get('packages', {xylem_key: None}):
+                xylem_data[pkg] = {}
 
                 # for pkg in repo['packages']: indent the rest of the lines here.
                 # Do generation for ubuntu
-                rosdep_data[pkg][OS_UBUNTU] = {}
+                xylem_data[pkg][OS_UBUNTU] = {}
                 # Do generation for empty OS X entries
                 homebrew_name = '%s/%s/%s' % (get_owner_name(url),
-                                              release_name, rosdep_key)
-                rosdep_data[pkg][OS_OSX] = {
+                                              release_name, xylem_key)
+                xylem_data[pkg][OS_OSX] = {
                     BREW_INSTALLER: {'packages': [homebrew_name]}
                 }
 
@@ -106,19 +106,19 @@ def gbprepo_to_rosdep_data(gbpdistro_data, targets_data, url=''):
                 for t in repo_targets:
                     if not isinstance(t, basestring):
                         raise InvalidData("invalid target spec: %s" % (t))
-                    # rosdep_data[pkg][OS_UBUNTU][t] = {
-                    rosdep_data[pkg][OS_UBUNTU][t] = {
+                    # xylem_data[pkg][OS_UBUNTU][t] = {
+                    xylem_data[pkg][OS_UBUNTU][t] = {
                         APT_INSTALLER: {'packages': [deb_package_name]}
                     }
-        return rosdep_data
+        return xylem_data
     except KeyError as e:
         raise InvalidData("Invalid GBP-distro/targets format: missing key: "
                         + str(e))
 
 
-def download_gbpdistro_as_rosdep_data(gbpdistro_url, targets_url=None):
+def download_gbpdistro_as_xylem_data(gbpdistro_url, targets_url=None):
     """
-    Download gbpdistro file from web and convert format to rosdep distro data.
+    Download gbpdistro file from web and convert format to xylem distro data.
 
     :param gbpdistro_url: url of gbpdistro file, ``str``
     :param target_url: override URL of platform targets file
@@ -126,7 +126,7 @@ def download_gbpdistro_as_rosdep_data(gbpdistro_url, targets_url=None):
     :raises: :exc:`InvalidData` If targets file does not pass cursory
      validation checks.
     """
-    # we can convert a gbpdistro file into rosdep data by following a
+    # we can convert a gbpdistro file into xylem data by following a
     # couple rules
     targets_data = download_targets_data(targets_url=targets_url)
     try:
@@ -134,7 +134,7 @@ def download_gbpdistro_as_rosdep_data(gbpdistro_url, targets_url=None):
         text = f.read()
         f.close()
         gbpdistro_data = yaml.safe_load(text)
-        return gbprepo_to_rosdep_data(gbpdistro_data,
+        return gbprepo_to_xylem_data(gbpdistro_data,
                                       targets_data,
                                       gbpdistro_url)
     except Exception as e:

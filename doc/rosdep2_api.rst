@@ -1,17 +1,17 @@
 .. _python_api:
 
-rosdep2 Python API
+xylem2 Python API
 ==================
 
-.. module:: rosdep2
+.. module:: xylem2
 
-**Experimental**: the rosdep2 Python library is still unstable.
+**Experimental**: the xylem2 Python library is still unstable.
 
-The :mod:`rosdep` Python module supports both the `rosdep`
-command-line tool as well as libraries that wish to use rosdep data
+The :mod:`xylem` Python module supports both the `xylem`
+command-line tool as well as libraries that wish to use xylem data
 files to resolve dependencies.
 
-As a developer, you may wish to extend :mod:`rosdep` to add new OS
+As a developer, you may wish to extend :mod:`xylem` to add new OS
 platforms or package managers.  Platforms are specified by registering
 information on the :class:`InstallerContext`.  Package managers
 generally extend the :class:`PackageManagerInstaller` implementation.
@@ -33,28 +33,28 @@ Exceptions
 Database Model
 --------------
 
-.. autoclass:: RosdepDatabase
+.. autoclass:: xylemDatabase
    :members:
 
-.. autoclass:: RosdepDatabaseEntry
+.. autoclass:: xylemDatabaseEntry
    :members:
 
 View Model
 ----------
 
-.. autoclass:: RosdepDefinition
+.. autoclass:: xylemDefinition
    :members:
 
-.. autoclass:: RosdepView
+.. autoclass:: xylemView
    :members:
 
-.. autoclass:: RosdepLookup
+.. autoclass:: xylemLookup
    :members:
 
 Loaders
 -------
 
-.. autoclass:: RosdepLoader
+.. autoclass:: xylemLoader
    :members:
 
 .. autoclass:: RosPkgLoader

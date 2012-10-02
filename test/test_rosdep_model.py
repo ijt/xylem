@@ -25,36 +25,36 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-def test_RosdepDatabaseEntry():
+def test_xylemDatabaseEntry():
     # not muich to test with container
-    from rosdep2.model import RosdepDatabaseEntry
-    d = RosdepDatabaseEntry({'a': 1}, [], 'foo')
-    assert d.rosdep_data == {'a': 1}
+    from xylem2.model import xylemDatabaseEntry
+    d = xylemDatabaseEntry({'a': 1}, [], 'foo')
+    assert d.xylem_data == {'a': 1}
     assert d.view_dependencies == []
     assert d.origin == 'foo'
 
-def test_RosdepDatabase():
-    from rosdep2.model import RosdepDatabase
+def test_xylemDatabase():
+    from xylem2.model import xylemDatabase
 
-    db = RosdepDatabase()
+    db = xylemDatabase()
     assert not db.is_loaded('foo')
 
     data = {'a': 1}
     db.set_view_data('foo', data, [], 'origin1')
     assert db.is_loaded('foo')    
     entry = db.get_view_data('foo')
-    assert entry.rosdep_data == data
+    assert entry.xylem_data == data
     assert entry.origin == 'origin1'
     assert entry.view_dependencies == []
     # make sure data is copy
     data['a'] = 2
-    assert entry.rosdep_data != data
+    assert entry.xylem_data != data
     
     data = {'b': 2}
     db.set_view_data('bar', data, ['foo'], 'origin2')
     assert db.is_loaded('bar')    
     entry = db.get_view_data('bar')
-    assert entry.rosdep_data == data
+    assert entry.xylem_data == data
     assert entry.origin == 'origin2'
     assert entry.view_dependencies == ['foo']
 
@@ -64,16 +64,16 @@ def test_RosdepDatabase():
     db.set_view_data('bar', data, ['baz', 'blah'], 'origin3')
     assert db.is_loaded('bar')    
     entry = db.get_view_data('bar')
-    assert entry.rosdep_data == data
+    assert entry.xylem_data == data
     assert entry.origin == 'origin3'
     assert set(entry.view_dependencies) == set(['baz', 'blah'])
     
 
-def test_RosdepDatabase_get_view_dependencies():
-    from rosdep2.model import RosdepDatabase
+def test_xylemDatabase_get_view_dependencies():
+    from xylem2.model import xylemDatabase
 
     data = {'a': 1}
-    db = RosdepDatabase()
+    db = xylemDatabase()
     
     db.set_view_data('foo', data, [], 'origin')
     assert [] == db.get_view_dependencies('foo')

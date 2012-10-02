@@ -34,7 +34,7 @@ import traceback
 
 from rospkg.os_detect import OsDetect
 
-from .core import rd_debug, RosdepInternalError, InstallFailed, print_bold, InvalidData
+from .core import rd_debug, xylemInternalError, InstallFailed, print_bold, InvalidData
 
 # use OsDetect.get_version() for OS version key
 TYPE_VERSION = 'version'
@@ -43,7 +43,7 @@ TYPE_CODENAME = 'codename'
 
 # kwc: InstallerContext is basically just a bunch of dictionaries with
 # defined lookup methods.  It really encompasses two facets of a
-# rosdep configuration: the pluggable nature of installers and
+# xylem configuration: the pluggable nature of installers and
 # platforms, as well as the resolution of the operating system for a
 # specific machine.  It is possible to decouple those two notions,
 # though there are some touch points over how this interfaces with the
@@ -51,7 +51,7 @@ TYPE_CODENAME = 'codename'
 # detectors and how the higher-level APIs can override them.
 class InstallerContext(object):
     """
-    :class:`InstallerContext` manages the context of execution for rosdep as it
+    :class:`InstallerContext` manages the context of execution for xylem as it
     relates to the installers, OS detectors, and other extensible
     APIs.
     """
@@ -133,7 +133,7 @@ class InstallerContext(object):
         Set the installer to use for *installer_key*.  This will
         replace any existing installer associated with the key.
         *installer_key* should be the same key used for the
-        ``rosdep.yaml`` package manager key.  If *installer* is
+        ``xylem.yaml`` package manager key.  If *installer* is
         ``None``, this will delete any existing associated installer
         from this context.
 
@@ -269,20 +269,20 @@ class Installer(object):
         """
         raise NotImplementedError("get_package_install_command", resolved, interactive, reinstall)
 
-    def get_depends(self, rosdep_args): 
+    def get_depends(self, xylem_args): 
         """ 
-        :returns: list of dependencies on other rosdep keys.  Only
+        :returns: list of dependencies on other xylem keys.  Only
           necessary if the package manager doesn't handle
           dependencies.
         """
         return [] # Default return empty list
 
-    def resolve(self, rosdep_args_dict):
+    def resolve(self, xylem_args_dict):
         """
-        :param rosdep_args_dict: argument dictionary to the rosdep rule for this package manager
+        :param xylem_args_dict: argument dictionary to the xylem rule for this package manager
         :returns: [resolutions].  resolved objects should be printable to a user, but are otherwise opaque.
         """
-        raise NotImplementedError("Base class resolve", rosdep_args_dict)
+        raise NotImplementedError("Base class resolve", xylem_args_dict)
 
     def unique(self, *resolved_rules):
         """
@@ -306,12 +306,12 @@ class PackageManagerInstaller(Installer):
     General form of a package manager :class:`Installer`
     implementation that assumes:
 
-     - installer rosdep args spec is a list of package names stored with the key "packages"
+     - installer xylem args spec is a list of package names stored with the key "packages"
      - a detect function exists that can return a list of packages that are installed
 
     Also, if *supports_depends* is set to ``True``:
     
-     - installer rosdep args spec can also include dependency specification with the key "depends"
+     - installer xylem args spec can also include dependency specification with the key "depends"
     """
 
     def __init__(self, detect_fn, supports_depends=False):
@@ -321,21 +321,21 @@ class PackageManagerInstaller(Installer):
         self.detect_fn = detect_fn
         self.supports_depends = supports_depends
 
-    def resolve(self, rosdep_args):
+    def resolve(self, xylem_args):
         """
         See :meth:`Installer.resolve()`
         """
         packages = None
-        if type(rosdep_args) == dict:
-            packages = rosdep_args.get("packages", [])
+        if type(xylem_args) == dict:
+            packages = xylem_args.get("packages", [])
             if type(packages) == type("string"):
                 packages = packages.split()
-        elif type(rosdep_args) == type('str'):
-            packages = rosdep_args.split(' ')
-        elif type(rosdep_args) == list:
-            packages = rosdep_args
+        elif type(xylem_args) == type('str'):
+            packages = xylem_args.split(' ')
+        elif type(xylem_args) == list:
+            packages = xylem_args
         else:
-            raise InvalidData("Invalid rosdep args: %s"%(rosdep_args))
+            raise InvalidData("Invalid xylem args: %s"%(xylem_args))
         return packages
 
     def unique(self, *resolved_rules):
@@ -361,17 +361,17 @@ class PackageManagerInstaller(Installer):
     def get_install_command(self, resolved, interactive=True, reinstall=False):
         raise NotImplementedError('subclasses must implement', resolved, interactive, reinstall)
 
-    def get_depends(self, rosdep_args): 
+    def get_depends(self, xylem_args): 
         """ 
-        :returns: list of dependencies on other rosdep keys.  Only
+        :returns: list of dependencies on other xylem keys.  Only
           necessary if the package manager doesn't handle
           dependencies.
         """
-        if self.supports_depends and type(rosdep_args) == dict:
-            return rosdep_args.get('depends', [])
+        if self.supports_depends and type(xylem_args) == dict:
+            return xylem_args.get('depends', [])
         return [] # Default return empty list
 
-class RosdepInstaller(object):
+class xylemInstaller(object):
 
     def __init__(self, installer_context, lookup):
         self.installer_context = installer_context
@@ -390,7 +390,7 @@ class RosdepInstaller(object):
 
         :returns: (uninstalled, errors), ``({str: [opaque]}, {str: ResolutionError})``.
           Uninstalled is a dictionary with the installer_key as the key.
-        :raises: :exc:`RosdepInternalError`
+        :raises: :exc:`xylemInternalError`
         """
         
         installer_context = self.installer_context
@@ -410,12 +410,12 @@ class RosdepInstaller(object):
             try:
                 installer = installer_context.get_installer(installer_key)
             except KeyError as e: # lookup has to be buggy to cause this
-                raise RosdepInternalError(e)
+                raise xylemInternalError(e)
             try:
                 packages_to_install = installer.get_packages_to_install(resolved)
             except Exception as e:
                 rd_debug(traceback.format_exc())
-                raise RosdepInternalError(e, message="Bad installer [%s]: %s"%(installer_key, e))
+                raise xylemInternalError(e, message="Bad installer [%s]: %s"%(installer_key, e))
 
             # only create key if there is something to do
             if packages_to_install:
@@ -428,12 +428,12 @@ class RosdepInstaller(object):
     def install(self, uninstalled, interactive=True, simulate=False,
                 continue_on_error=False, reinstall=False, verbose=False):
         """
-        Install the uninstalled rosdeps.  This API is for the bulk
-        workflow of rosdep (see example below).  For a more targeted
-        install API, see :meth:`RosdepInstaller.install_resolved`.
+        Install the uninstalled xylems.  This API is for the bulk
+        workflow of xylem (see example below).  For a more targeted
+        install API, see :meth:`xylemInstaller.install_resolved`.
 
         :param uninstalled: uninstalled value from
-          :meth:`RosdepInstaller.get_uninstalled`.  Value is a
+          :meth:`xylemInstaller.get_uninstalled`.  Value is a
           dictionary mapping installer key to a dictionary with resolution
           data, ``{str: {str: vals}}``
         :param interactive: If ``False``, suppress
@@ -446,7 +446,7 @@ class RosdepInstaller(object):
         :param reinstall: If ``True``, install dependencies if even
           already installed (default ``False``).
 
-        :raises: :exc:`InstallFailed` if any rosdeps fail to install
+        :raises: :exc:`InstallFailed` if any xylems fail to install
           and *continue_on_error* is ``False``.
         :raises: :exc:`KeyError` If *uninstalled* value has invalid
           installer keys
@@ -487,12 +487,12 @@ class RosdepInstaller(object):
     def install_resolved(self, installer_key, resolved, simulate=False, interactive=True,
                          reinstall=False, continue_on_error=False, verbose=False):
         """
-        Lower-level API for installing a rosdep dependency.  The
-        rosdep keys have already been resolved to *installer_key* and
-        *resolved* via :exc:`RosdepLookup` or other means.
+        Lower-level API for installing a xylem dependency.  The
+        xylem keys have already been resolved to *installer_key* and
+        *resolved* via :exc:`xylemLookup` or other means.
         
         :param installer_key: Key for installer to apply to *resolved*, ``str``
-        :param resolved: Opaque resolution list from :class:`RosdepLookup`.
+        :param resolved: Opaque resolution list from :class:`xylemLookup`.
         :param interactive: If ``True``, allow interactive prompts (default ``True``)
         :param simulate: If ``True``, don't execute installation commands, just print to screen.
         :param reinstall: If ``True``, install dependencies if even

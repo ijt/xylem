@@ -45,7 +45,7 @@ def test_portage_available():
     if not is_gentoo():
         print "Skipping not Gentoo"
         return 
-    from rosdep2.platforms.gentoo import portage_available
+    from xylem2.platforms.gentoo import portage_available
 
     original_exists = os.path.exists
 
@@ -95,7 +95,7 @@ def test_portage_detect():
         print "Skipping not Gentoo"
         return 
 
-    from rosdep2.platforms.gentoo import portage_detect
+    from xylem2.platforms.gentoo import portage_detect
 
     m = Mock()
     m.return_value = []
@@ -166,7 +166,7 @@ def test_PortageInstaller():
         print "Skipping not Gentoo"
         return 
 
-    from rosdep2.platforms.gentoo import PortageInstaller
+    from xylem2.platforms.gentoo import PortageInstaller
 
     @patch.object(PortageInstaller, 'get_packages_to_install')
     def test(mock_method):

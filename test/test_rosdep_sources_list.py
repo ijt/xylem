@@ -31,26 +31,26 @@ import yaml
 import urllib2
 
 import rospkg.distro
-import rosdep2.sources_list
+import xylem2.sources_list
 
-GITHUB_BASE_URL = 'https://raw.github.com/ros/rosdistro/master/rosdep/base.yaml'
+GITHUB_BASE_URL = 'https://raw.github.com/ros/rosdistro/master/xylem/base.yaml'
 
 def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'sources.list.d'))
 
 def test_get_sources_list_dir():
-    assert rosdep2.sources_list.get_sources_list_dir()
+    assert xylem2.sources_list.get_sources_list_dir()
 
 def test_get_sources_cache_dir():
-    assert rosdep2.sources_list.get_sources_cache_dir()
+    assert xylem2.sources_list.get_sources_cache_dir()
 
 def test_parse_sources_data():
-    from rosdep2.sources_list import parse_sources_data
+    from xylem2.sources_list import parse_sources_data
     
     parse_sources_data
 
 def test_url_constants():
-    from rosdep2.sources_list import DEFAULT_SOURCES_LIST_URL
+    from xylem2.sources_list import DEFAULT_SOURCES_LIST_URL
     for url_name, url in [('DEFAULT_SOURCES_LIST_URL', DEFAULT_SOURCES_LIST_URL)]:
         try:
             f = urllib2.urlopen(url)
@@ -60,7 +60,7 @@ def test_url_constants():
             assert False, "URL [%s][%s] failed to download"%(url_name, url)
 
 def test_download_default_sources_list():
-    from rosdep2.sources_list import download_default_sources_list
+    from xylem2.sources_list import download_default_sources_list
     data = download_default_sources_list()
     assert 'http' in data, data # sanity check, all sources files have urls
     try:
@@ -70,24 +70,24 @@ def test_download_default_sources_list():
         pass
     
 def test_CachedDataSource():
-    from rosdep2.sources_list import CachedDataSource, DataSource, TYPE_GBPDISTRO, TYPE_YAML
+    from xylem2.sources_list import CachedDataSource, DataSource, TYPE_GBPDISTRO, TYPE_YAML
     type_ = TYPE_GBPDISTRO
     url = 'http://fake.willowgarage.com/foo'
     tags = ['tag1']
-    rosdep_data = {'key': {}}
+    xylem_data = {'key': {}}
     origin = '/tmp/bar'
-    cds = CachedDataSource(type_, url, tags, rosdep_data, origin=origin)
-    assert cds == CachedDataSource(type_, url, tags, rosdep_data, origin=origin)
-    assert cds != CachedDataSource(type_, url, tags, rosdep_data, origin=None)
+    cds = CachedDataSource(type_, url, tags, xylem_data, origin=origin)
+    assert cds == CachedDataSource(type_, url, tags, xylem_data, origin=origin)
+    assert cds != CachedDataSource(type_, url, tags, xylem_data, origin=None)
     assert cds != CachedDataSource(type_, url, tags, {}, origin=origin)
-    assert cds != CachedDataSource(TYPE_YAML, url, tags, rosdep_data, origin=origin)
-    assert cds != CachedDataSource(type_, 'http://ros.org/foo.yaml', tags, rosdep_data, origin=origin)
+    assert cds != CachedDataSource(TYPE_YAML, url, tags, xylem_data, origin=origin)
+    assert cds != CachedDataSource(type_, 'http://ros.org/foo.yaml', tags, xylem_data, origin=origin)
     assert cds != DataSource(type_, url, tags, origin=origin)
     assert DataSource(type_, url, tags, origin=origin) != cds
     assert cds.type == type_
     assert cds.url == url
     assert cds.origin == origin
-    assert cds.rosdep_data == rosdep_data
+    assert cds.xylem_data == xylem_data
     assert type_ in str(cds)
     assert type_ in repr(cds)
     assert url in str(cds)
@@ -98,9 +98,9 @@ def test_CachedDataSource():
     assert 'key' in repr(cds)    
     
 def test_DataSource():
-    from rosdep2.sources_list import DataSource
+    from xylem2.sources_list import DataSource
     data_source = DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
-    assert data_source == rosdep2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
+    assert data_source == xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
     assert 'yaml' == data_source.type
     assert 'http://fake/url' == data_source.url
     assert ['tag1', 'tag2'] == data_source.tags
@@ -114,29 +114,29 @@ def test_DataSource():
     assert repr(data_source)
 
     try:
-        rosdep2.sources_list.DataSource('yaml', 'http://fake/url', 'tag1', origin='foo')
+        xylem2.sources_list.DataSource('yaml', 'http://fake/url', 'tag1', origin='foo')
         assert False, "should have raised"
     except ValueError:
         pass
     try:
-        rosdep2.sources_list.DataSource('yaml', 'non url', ['tag1'], origin='foo')
+        xylem2.sources_list.DataSource('yaml', 'non url', ['tag1'], origin='foo')
         assert False, "should have raised"
     except ValueError:
         pass
     try:
-        rosdep2.sources_list.DataSource('bad', 'http://fake/url', ['tag1'], origin='foo')
+        xylem2.sources_list.DataSource('bad', 'http://fake/url', ['tag1'], origin='foo')
         assert False, "should have raised"
     except ValueError:
         pass
     try:
-        rosdep2.sources_list.DataSource('yaml', 'http://host.no.path/', ['tag1'], origin='foo')
+        xylem2.sources_list.DataSource('yaml', 'http://host.no.path/', ['tag1'], origin='foo')
         assert False, "should have raised"
     except ValueError:
         pass
 
 def test_parse_sources_file():
-    from rosdep2.sources_list import parse_sources_file
-    from rosdep2 import InvalidData
+    from xylem2.sources_list import parse_sources_file
+    from xylem2 import InvalidData
     for f in ['20-default.list', '30-nonexistent.list']:
         path = os.path.join(get_test_dir(), f)
         sources = parse_sources_file(path)
@@ -148,8 +148,8 @@ def test_parse_sources_file():
         pass
     
 def test_parse_sources_list():
-    from rosdep2.sources_list import parse_sources_list
-    from rosdep2 import InvalidData
+    from xylem2.sources_list import parse_sources_list
+    from xylem2 import InvalidData
     # test with non-existent dir, should return with empty list as
     # directory is not required to exist.
     assert [] == parse_sources_list(sources_list_dir='/not/a/real/path')
@@ -169,7 +169,7 @@ def test_parse_sources_list():
     parse_sources_list()
 
 def test_write_cache_file():
-    from rosdep2.sources_list import write_cache_file, compute_filename_hash
+    from xylem2.sources_list import write_cache_file, compute_filename_hash
     tempdir = tempfile.mkdtemp()
     
     filepath = write_cache_file(tempdir, 'foo', {'data': 1})
@@ -179,10 +179,10 @@ def test_write_cache_file():
         assert {'data': 1} == yaml.load(f.read())
     
 def test_update_sources_list():
-    from rosdep2.sources_list import update_sources_list, InvalidData, compute_filename_hash
+    from xylem2.sources_list import update_sources_list, InvalidData, compute_filename_hash
     sources_list_dir=get_test_dir()
     tempdir = tempfile.mkdtemp()
-    # use a subdirectory of test dir to make sure rosdep creates the necessary substructure
+    # use a subdirectory of test dir to make sure xylem creates the necessary substructure
     tempdir = os.path.join(tempdir, 'newdir')
 
     errors = []
@@ -194,7 +194,7 @@ def test_update_sources_list():
     assert len(retval) == 2, retval
     # one of our sources is intentionally bad, this should be a softfail
     assert len(errors) == 1, errors
-    assert errors[0][0].url == 'https://badhostname.willowgarage.com/rosdep.yaml'
+    assert errors[0][0].url == 'https://badhostname.willowgarage.com/xylem.yaml'
 
     source0, path0 = retval[0]
     assert source0.origin.endswith('20-default.list'), source0
@@ -211,14 +211,14 @@ def test_update_sources_list():
     # download data is present.
     with open(os.path.join(tempdir, 'index'), 'r') as f:
         index = f.read().strip()
-    expected = """#autogenerated by rosdep, do not edit. use 'rosdep update' instead
+    expected = """#autogenerated by xylem, do not edit. use 'xylem update' instead
 yaml %s 
 yaml %s python
 yaml %s ubuntu"""%(GITHUB_URL, GITHUB_PYTHON_URL, BADHOSTNAME_URL)
     assert expected == index, "\n[%s]\nvs\n[%s]"%(expected, index)
 
 def test_load_cached_sources_list():
-    from rosdep2.sources_list import load_cached_sources_list, update_sources_list
+    from xylem2.sources_list import load_cached_sources_list, update_sources_list
     tempdir = tempfile.mkdtemp()
 
     # test behavior on empty cache
@@ -238,44 +238,44 @@ def test_load_cached_sources_list():
     source2 = retval[2]
     
     # this should be the 'default' source
-    assert 'python' in source1.rosdep_data
+    assert 'python' in source1.xylem_data
     assert not source0.tags
     
     # this should be the 'non-existent' source
-    assert source2.rosdep_data is None
+    assert source2.xylem_data is None
     assert source2.tags == ['ubuntu']
 
 def test_DataSourceMatcher():
-    empty_data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', [])
-    assert empty_data_source == rosdep2.sources_list.DataSource('yaml', 'http://fake/url', [])
+    empty_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', [])
+    assert empty_data_source == xylem2.sources_list.DataSource('yaml', 'http://fake/url', [])
 
     # matcher must match 'all' tags
-    data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
-    partial_data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1'])
+    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
+    partial_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1'])
 
     # same tags as test data source
-    matcher = rosdep2.sources_list.DataSourceMatcher(['tag1', 'tag2'])
+    matcher = xylem2.sources_list.DataSourceMatcher(['tag1', 'tag2'])
     assert matcher.matches(data_source)
     assert matcher.matches(partial_data_source)
     assert matcher.matches(empty_data_source)
 
     # alter one tag
-    matcher = rosdep2.sources_list.DataSourceMatcher(['tag1', 'tag3'])
+    matcher = xylem2.sources_list.DataSourceMatcher(['tag1', 'tag3'])
     assert not matcher.matches(data_source)
     assert matcher.matches(empty_data_source)
-    matcher = rosdep2.sources_list.DataSourceMatcher(['tag1'])
+    matcher = xylem2.sources_list.DataSourceMatcher(['tag1'])
     assert not matcher.matches(data_source)
 
-def test_download_rosdep_data():
-    from rosdep2.sources_list import download_rosdep_data
-    from rosdep2 import DownloadFailure
+def test_download_xylem_data():
+    from xylem2.sources_list import download_xylem_data
+    from xylem2 import DownloadFailure
     url = GITHUB_BASE_URL
-    data = download_rosdep_data(url)
+    data = download_xylem_data(url)
     assert 'boost' in data #sanity check
 
     # try with a bad URL
     try:
-        data = download_rosdep_data('http://badhost.willowgarage.com/rosdep.yaml')
+        data = download_xylem_data('http://badhost.willowgarage.com/xylem.yaml')
         assert False, "should have raised"
     except DownloadFailure as e:
         pass
@@ -285,15 +285,15 @@ def test_download_rosdep_data():
         'https://code.ros.org/svn/release/trunk/distros/manifest.xml',
         ]:
         try:
-            data = download_rosdep_data(url)
+            data = download_xylem_data(url)
             assert False, "should have raised"
         except DownloadFailure as e:
             pass
     
-BADHOSTNAME_URL = 'https://badhostname.willowgarage.com/rosdep.yaml'
-GITHUB_URL = 'https://github.com/ros/rosdistro/raw/master/rosdep/base.yaml'
-GITHUB_PYTHON_URL = 'https://github.com/ros/rosdistro/raw/master/rosdep/python.yaml'
-GITHUB_FUERTE_URL = 'https://raw.github.com/ros/rosdep_rules/master/rosdep_fuerte.yaml'
+BADHOSTNAME_URL = 'https://badhostname.willowgarage.com/xylem.yaml'
+GITHUB_URL = 'https://github.com/ros/rosdistro/raw/master/xylem/base.yaml'
+GITHUB_PYTHON_URL = 'https://github.com/ros/rosdistro/raw/master/xylem/python.yaml'
+GITHUB_FUERTE_URL = 'https://raw.github.com/ros/xylem_rules/master/xylem_fuerte.yaml'
 EXAMPLE_SOURCES_DATA_BAD_TYPE = "YAML %s"%(GITHUB_URL)
 EXAMPLE_SOURCES_DATA_BAD_URL = "yaml not-a-url tag1 tag2"
 EXAMPLE_SOURCES_DATA_BAD_LEN = "yaml"
@@ -306,7 +306,7 @@ yaml %s
 yaml %s fuerte ubuntu
 """%(GITHUB_URL, GITHUB_FUERTE_URL)
 def test_parse_sources_data():
-    from rosdep2.sources_list import parse_sources_data, TYPE_YAML, InvalidData
+    from xylem2.sources_list import parse_sources_data, TYPE_YAML, InvalidData
     
     retval = parse_sources_data(EXAMPLE_SOURCES_DATA, origin='foo')
     assert len(retval) == 1
@@ -350,34 +350,34 @@ def test_DataSourceMatcher_create_default():
     os_detect = rospkg.os_detect.OsDetect()
     os_name, os_version, os_codename = os_detect.detect_os()
 
-    matcher = rosdep2.sources_list.DataSourceMatcher.create_default()
+    matcher = xylem2.sources_list.DataSourceMatcher.create_default()
 
     # matches full
-    os_data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', [distro_name, os_name, os_codename])
+    os_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', [distro_name, os_name, os_codename])
     assert matcher.matches(os_data_source)
 
     # matches against current os
-    os_data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', [os_name, os_codename])
+    os_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', [os_name, os_codename])
     assert matcher.matches(os_data_source)
     
     # matches against current distro
-    distro_data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', [distro_name])
+    distro_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', [distro_name])
     assert matcher.matches(distro_data_source)
 
     # test matcher with os override
-    matcher = rosdep2.sources_list.DataSourceMatcher.create_default(os_override=('fubuntu', 'flucid'))
+    matcher = xylem2.sources_list.DataSourceMatcher.create_default(os_override=('fubuntu', 'flucid'))
     assert not matcher.matches(os_data_source)
-    data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', ['fubuntu'])
+    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['fubuntu'])
     assert matcher.matches(data_source)    
-    data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', ['flucid'])
+    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['flucid'])
     assert matcher.matches(data_source)    
-    data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', ['flucid', 'fubuntu'])
+    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['flucid', 'fubuntu'])
     assert matcher.matches(data_source)    
-    data_source = rosdep2.sources_list.DataSource('yaml', 'http://fake/url', ['kubuntu', 'lucid'])
+    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['kubuntu', 'lucid'])
     assert not matcher.matches(data_source)    
     
 def test_SourcesListLoader_create_default():
-    from rosdep2.sources_list import update_sources_list, SourcesListLoader, DataSourceMatcher
+    from xylem2.sources_list import update_sources_list, SourcesListLoader, DataSourceMatcher
     # create temp dir for holding sources cache
     tempdir = tempfile.mkdtemp()
 
@@ -388,7 +388,7 @@ def test_SourcesListLoader_create_default():
     assert retval
     
     # now test with cached data
-    matcher = rosdep2.sources_list.DataSourceMatcher(['ubuntu', 'lucid'])
+    matcher = xylem2.sources_list.DataSourceMatcher(['ubuntu', 'lucid'])
     loader = SourcesListLoader.create_default(matcher, sources_cache_dir=tempdir)
     assert loader.sources
     sources0 = loader.sources
@@ -398,7 +398,7 @@ def test_SourcesListLoader_create_default():
     assert sources0 == loader.sources
     
     # now test with different matcher
-    matcher2 = rosdep2.sources_list.DataSourceMatcher(['python'])
+    matcher2 = xylem2.sources_list.DataSourceMatcher(['python'])
     loader2 = SourcesListLoader.create_default(matcher2, sources_cache_dir=tempdir)
     assert loader2.sources
     # - should have filtered down to python-only
@@ -409,7 +409,7 @@ def test_SourcesListLoader_create_default():
 
     # very simple, always raises RNF
     try:
-        loader.get_rosdeps('foo')
+        loader.get_xylems('foo')
     except rospkg.ResourceNotFound: pass
     try:
         loader.get_view_key('foo')
@@ -434,15 +434,15 @@ def test_SourcesListLoader_create_default():
     assert [] == loader.get_view_dependencies(GITHUB_URL)    
 
     # load_view
-    from rosdep2.model import RosdepDatabase
+    from xylem2.model import xylemDatabase
     for verbose in [True, False]:
-        rosdep_db = RosdepDatabase()
-        loader.load_view(GITHUB_URL, rosdep_db, verbose=verbose)
-        assert rosdep_db.is_loaded(GITHUB_URL)
-        assert [] == rosdep_db.get_view_dependencies(GITHUB_URL)
-        entry = rosdep_db.get_view_data(GITHUB_URL)
-        assert 'cmake' in entry.rosdep_data
+        xylem_db = xylemDatabase()
+        loader.load_view(GITHUB_URL, xylem_db, verbose=verbose)
+        assert xylem_db.is_loaded(GITHUB_URL)
+        assert [] == xylem_db.get_view_dependencies(GITHUB_URL)
+        entry = xylem_db.get_view_data(GITHUB_URL)
+        assert 'cmake' in entry.xylem_data
         assert GITHUB_URL == entry.origin
 
     #  - coverage, repeat loader, should noop
-    loader.load_view(GITHUB_URL, rosdep_db)
+    loader.load_view(GITHUB_URL, xylem_db)

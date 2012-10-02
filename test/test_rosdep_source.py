@@ -70,7 +70,7 @@ def _subtest_rep112_rdmanifest(resolved):
     assert resolved.tarball_md5sum == 'b17dc36055cd2259c88b2602601415d9'
 
 def test_SourceInstall():
-    from rosdep2.platforms.source import InvalidRdmanifest, SourceInstall
+    from xylem2.platforms.source import InvalidRdmanifest, SourceInstall
 
     #tripwire
     SourceInstall()
@@ -129,7 +129,7 @@ def test_SourceInstall():
     assert resolved.tarball_md5sum is None
 
 def test_is_installed():
-    from rosdep2.platforms.source import SourceInstaller, SourceInstall
+    from xylem2.platforms.source import SourceInstaller, SourceInstall
     resolved = SourceInstall()
     resolved.check_presence_command = """#!/bin/bash
 exit 0
@@ -138,7 +138,7 @@ exit 0
     assert installer.is_installed(resolved)
     
 def test_source_detect():
-    from rosdep2.platforms.source import source_detect, SourceInstall
+    from xylem2.platforms.source import source_detect, SourceInstall
     resolved = SourceInstall()
     resolved.check_presence_command = """#!/bin/bash
 exit 0
@@ -158,7 +158,7 @@ exit 0
     assert [] == source_detect(resolved, exec_fn=no)
     
 def test_SourceInstaller_get_install_command():
-    from rosdep2.platforms.source import SourceInstaller, SourceInstall
+    from xylem2.platforms.source import SourceInstaller, SourceInstall
     installer = SourceInstaller()
 
     resolved = SourceInstall()
@@ -168,7 +168,7 @@ exit 1
 """
     commands = installer.get_install_command([resolved])
     assert len(commands) == 1
-    assert commands[0] == ['rosdep-source', 'install', 'http://fake/foo']
+    assert commands[0] == ['xylem-source', 'install', 'http://fake/foo']
 
     resolved = SourceInstall()
     resolved.manifest_url = 'http://fake/foo'
@@ -179,10 +179,10 @@ exit 0
     assert not(commands)
     
 def test_SourceInstaller_resolve():
-    from rosdep2.platforms.source import SourceInstaller, InvalidData
+    from xylem2.platforms.source import SourceInstaller, InvalidData
     test_dir = get_test_dir()
 
-    url = 'https://kforge.ros.org/rosrelease/rosdep/raw-file/908818f28156/test/source/rep112-example.rdmanifest'
+    url = 'https://kforge.ros.org/rosrelease/xylem/raw-file/908818f28156/test/source/rep112-example.rdmanifest'
     md5sum_good = 'af0dc0e2d0c0c3181dd7670c4147f155'
     md5sum_bad = 'fake'
 
@@ -213,7 +213,7 @@ def test_SourceInstaller_resolve():
 
         
 def test_load_rdmanifest():
-    from rosdep2.platforms.source import load_rdmanifest, InvalidRdmanifest
+    from xylem2.platforms.source import load_rdmanifest, InvalidRdmanifest
     # load_rdmanifest is just a YAML unmarshaller with an exception change
     assert 'str' == load_rdmanifest('str')
     assert {'a': 'b'} == load_rdmanifest('{a: b}')
@@ -226,7 +226,7 @@ def test_load_rdmanifest():
     
 REP112_MD5SUM = 'af0dc0e2d0c0c3181dd7670c4147f155'
 def test_get_file_hash():
-    from rosdep2.platforms.source import get_file_hash
+    from xylem2.platforms.source import get_file_hash
     path = os.path.join(get_test_dir(), 'rep112-example.rdmanifest')
     assert REP112_MD5SUM == get_file_hash(path)
     
@@ -235,8 +235,8 @@ def test_fetch_file():
     with open(os.path.join(test_dir, 'rep112-example.rdmanifest')) as f:
         expected = f.read()
 
-    from rosdep2.platforms.source import fetch_file
-    url = 'https://kforge.ros.org/rosrelease/rosdep/raw-file/931b030d6b3b/test/source/rep112-example.rdmanifest'
+    from xylem2.platforms.source import fetch_file
+    url = 'https://kforge.ros.org/rosrelease/xylem/raw-file/931b030d6b3b/test/source/rep112-example.rdmanifest'
     contents, error = fetch_file(url, REP112_MD5SUM)
     assert not error
     assert contents == expected
@@ -254,8 +254,8 @@ def test_download_rdmanifest():
     with open(os.path.join(test_dir, 'rep112-example.rdmanifest')) as f:
         expected = yaml.load(f)
 
-    from rosdep2.platforms.source import download_rdmanifest, DownloadFailed
-    url = 'https://kforge.ros.org/rosrelease/rosdep/raw-file/931b030d6b3b/test/source/rep112-example.rdmanifest'
+    from xylem2.platforms.source import download_rdmanifest, DownloadFailed
+    url = 'https://kforge.ros.org/rosrelease/xylem/raw-file/931b030d6b3b/test/source/rep112-example.rdmanifest'
     contents, download_url = download_rdmanifest(url, REP112_MD5SUM)
     assert contents == expected
     assert download_url == url
@@ -281,14 +281,14 @@ def test_download_rdmanifest():
 
     
 def test_install_from_file():
-    from rosdep2.platforms.source import install_from_file
+    from xylem2.platforms.source import install_from_file
     f = os.path.join(get_test_dir(), 'noop-not-installed.rdmanifest')
     install_from_file(f)
 
 def test_install_source():
-    from rosdep2.platforms.source import install_source, SourceInstall
+    from xylem2.platforms.source import install_source, SourceInstall
     resolved = SourceInstall()
-    resolved.tarball = 'https://kforge.ros.org/rosrelease/rosdep/raw-file/tip/test/source/foo.tar.gz'
+    resolved.tarball = 'https://kforge.ros.org/rosrelease/xylem/raw-file/tip/test/source/foo.tar.gz'
     resolved.tarball_md5sum = 'fd34dc39f8f192b97fcc191fe0a6befc'
     resolved.install_command = """#!/bin/sh
 exit 0

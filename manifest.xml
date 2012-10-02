@@ -1,7 +1,7 @@
 <package>
   <description brief="A ROS system dependency manager">
 
-This is a standalone version of the rosdep system 
+This is a standalone version of the xylem system 
 dependency tool.  This package should NOT be added
 to a ROS_PACKAGE_PATH.  Instead, it is designed to be
 installed as a system dependency via apt, pip, or the like.

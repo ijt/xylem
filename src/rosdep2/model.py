@@ -28,38 +28,38 @@
 # Author Ken Conley/kwc@willowgarage.com
 
 """
-Underlying model of rosdep data.  The basic data model of rosdep is to
+Underlying model of xylem data.  The basic data model of xylem is to
 store a dictionary of data indexed by view name (i.e. ROS stack name).
-This data includes a dictionary mapping rosdep dependency names to
+This data includes a dictionary mapping xylem dependency names to
 rules and the view dependencies.
 
 This is a lower-level representation.  Higher-level representation can
-combine these rosdep dependency maps and view dependencies together
+combine these xylem dependency maps and view dependencies together
 into a combined view on which queries can be made.
 """
 
-class RosdepDatabaseEntry(object):
+class xylemDatabaseEntry(object):
     """
-    Stores rosdep data and metadata for a single view.
+    Stores xylem data and metadata for a single view.
     """
     
-    def __init__(self, rosdep_data, view_dependencies, origin):
+    def __init__(self, xylem_data, view_dependencies, origin):
         """
-        :param rosdep_data: raw rosdep dictionary map for view
+        :param xylem_data: raw xylem dictionary map for view
         :param view_dependencies: list of view dependency names
         :param origin: name of where data originated, e.g. filename
         """
-        self.rosdep_data = rosdep_data
+        self.xylem_data = xylem_data
         self.view_dependencies = view_dependencies
         self.origin = origin
                 
-class RosdepDatabase(object):
+class xylemDatabase(object):
     """
-    Stores loaded rosdep data for multiple views.
+    Stores loaded xylem data for multiple views.
     """
     
     def __init__(self):
-        self._rosdep_db = {} # {view_name: RosdepDatabaseEntry}
+        self._xylem_db = {} # {view_name: xylemDatabaseEntry}
 
     def is_loaded(self, view_name):
         """
@@ -67,7 +67,7 @@ class RosdepDatabase(object):
         :returns: ``True`` if *view_name* has been loaded into this
           database.
         """
-        return view_name in self._rosdep_db
+        return view_name in self._xylem_db
 
     def mark_loaded(self, view_name):
         """
@@ -77,30 +77,30 @@ class RosdepDatabase(object):
         """
         self.set_view_data(view_name, {}, [], None)
         
-    def set_view_data(self, view_name, rosdep_data, view_dependencies, origin):
+    def set_view_data(self, view_name, xylem_data, view_dependencies, origin):
         """
         Set data associated with view.  This will create a new
-        :class:`RosdepDatabaseEntry`.
+        :class:`xylemDatabaseEntry`.
 
-        :param rosdep_data: rosdep data map to associated with view.
+        :param xylem_data: xylem data map to associated with view.
           This will be copied.
-        :param origin: origin of view data, e.g. filepath of ``rosdep.yaml``
+        :param origin: origin of view data, e.g. filepath of ``xylem.yaml``
         """
-        self._rosdep_db[view_name] = RosdepDatabaseEntry(rosdep_data.copy(), view_dependencies, origin)
+        self._xylem_db[view_name] = xylemDatabaseEntry(xylem_data.copy(), view_dependencies, origin)
 
     def get_view_names(self):
         """
         :returns: list of view names that are loaded into this database.
         """
-        return self._rosdep_db.keys()
+        return self._xylem_db.keys()
     
     def get_view_data(self, view_name):
         """
-        :returns: :class:`RosdepDatabaseEntry` of given view.
+        :returns: :class:`xylemDatabaseEntry` of given view.
 
         :raises: :exc:`KeyError` if no entry for *view_name*
         """
-        return self._rosdep_db[view_name]
+        return self._xylem_db[view_name]
     
     def get_view_dependencies(self, view_name):
         """

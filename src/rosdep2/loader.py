@@ -28,31 +28,31 @@
 # Author Ken Conley/kwc@willowgarage.com
 
 """
-Base API for loading rosdep information by package or stack name.
+Base API for loading xylem information by package or stack name.
 This API is decoupled from the ROS packaging system to enable multiple
-implementations of rosdep, including ones that don't rely on the ROS
+implementations of xylem, including ones that don't rely on the ROS
 packaging system.  This is necessary, for example, to implement a
-version of rosdep that works against tarballs of released stacks.
+version of xylem that works against tarballs of released stacks.
 """
 
 import yaml
 
 from .core import InvalidData
 
-ROSDEP_YAML = 'rosdep.yaml'
+xylem_YAML = 'xylem.yaml'
 
 yaml.add_constructor(
     u'tag:yaml.org,2002:float',
     yaml.constructor.Constructor.construct_yaml_str)
 
-class RosdepLoader:
+class xylemLoader:
     """
-    Base API for loading rosdep information by package or stack name.  
+    Base API for loading xylem information by package or stack name.  
     """
     
-    def load_rosdep_yaml(self, yaml_contents, origin):
+    def load_xylem_yaml(self, yaml_contents, origin):
         """
-        Utility routine for unmarshalling rosdep data encoded as YAML.
+        Utility routine for unmarshalling xylem data encoded as YAML.
 
         :param origin: origin of yaml contents (for error messages)
         :raises: :exc:`yaml.YAMLError`
@@ -62,18 +62,18 @@ class RosdepLoader:
         except yaml.YAMLError as e:
             raise InvalidData("Invalid YAML in [%s]: %s"%(origin, e), origin=origin)
 
-    def load_view(self, view_name, rosdep_db, verbose=False):
+    def load_view(self, view_name, xylem_db, verbose=False):
         """
-        Load view data into rosdep_db. If the view has already been
-        loaded into rosdep_db, this method does nothing.
+        Load view data into xylem_db. If the view has already been
+        loaded into xylem_db, this method does nothing.
 
         :param view_name: name of ROS stack to load, ``str``
-        :param rosdep_db: database to load stack data into, :class:`RosdepDatabase`
+        :param xylem_db: database to load stack data into, :class:`xylemDatabase`
 
         :raises: :exc:`InvalidData`
         :raises: :exc:`rospkg.ResourceNotFound` if view cannot be located
         """
-        raise NotImplementedError(view_name, rosdep_db, verbose) #pychecker
+        raise NotImplementedError(view_name, xylem_db, verbose) #pychecker
 
     def get_loadable_resources(self):
         raise NotImplementedError()
@@ -81,7 +81,7 @@ class RosdepLoader:
     def get_loadable_views(self):
         raise NotImplementedError()
 
-    def get_rosdeps(self, resource_name, implicit=True):
+    def get_xylems(self, resource_name, implicit=True):
         """
         :raises: :exc:`rospkg.ResourceNotFound` if *resource_name* cannot be found.
         """

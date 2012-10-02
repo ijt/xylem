@@ -11,13 +11,13 @@ In progress, please see :ref:`Python API <python_api>`.
 REP 114: rospkg standalone library
 ----------------------------------
 
-The rosdep library is being developed using the ROS REP process.  It
+The xylem library is being developed using the ROS REP process.  It
 is necessary to be familiar with these REPs in order to make sure 
-that rosdep continues to follow the relevant specifications.
+that xylem continues to follow the relevant specifications.
 
-- `REP 111: Multiple Package Manager Support for Rosdep <http://ros.org/reps/rep-0111.html>`_.  
-- `REP 112: Source Package Manager for Rosdep <http://ros.org/reps/rep-0112.html>`_.  
-- `REP 125: rosdep 2 <http://ros.org/reps/rep-0125.html>`_.  
+- `REP 111: Multiple Package Manager Support for xylem <http://ros.org/reps/rep-0111.html>`_.  
+- `REP 112: Source Package Manager for xylem <http://ros.org/reps/rep-0112.html>`_.  
+- `REP 125: xylem 2 <http://ros.org/reps/rep-0125.html>`_.  
 
 Bug reports and feature requests
 --------------------------------
@@ -28,24 +28,24 @@ Bug reports and feature requests
 Getting the code
 ----------------
 
-The rosdep codebase is hosted on GitHub.  To get started contributing patches, please create a fork:
+The xylem codebase is hosted on GitHub.  To get started contributing patches, please create a fork:
 
-https://github.com/ros/rosdep
+https://github.com/ros/xylem
 
 Supporting a new OS/package manager
 -----------------------------------
 
-Adding new platforms to rosdep can be separated into two steps: adding
+Adding new platforms to xylem can be separated into two steps: adding
 support for a new package manager, and adding support for a new OS.
 
-NOTE: There are numerous examples in :mod:`rosdep2.platforms` that you
+NOTE: There are numerous examples in :mod:`xylem2.platforms` that you
 can follow.
 
 Declaring a new OS
 ''''''''''''''''''
 
 Adding support for a new OS is fairly straightforward: you just
-have to provide rosdep2 the keys that are associated with your OS and the 
+have to provide xylem2 the keys that are associated with your OS and the 
 keys of the installers that your OS supports.
 
 Implementations must provide a ``register_platforms(context)`` call
@@ -125,19 +125,19 @@ Setup
     pip install mock
 
 
-rosdep2 uses `Python nose <http://readthedocs.org/docs/nose/en/latest/>`_ 
+xylem2 uses `Python nose <http://readthedocs.org/docs/nose/en/latest/>`_ 
 for testing, which is a fairly simple and straightfoward test
 framework.  You just have to write a function start with the name
 ``test`` and use normal ``assert`` statements for your tests.
 
-rosdep2 also uses `mock <http://www.voidspace.org.uk/python/mock/>`_ to
+xylem2 also uses `mock <http://www.voidspace.org.uk/python/mock/>`_ to
 create mocks for testing.
 
 You can run the tests, including coverage, as follows:
 
 ::
 
-    cd rosdep2/test
+    cd xylem2/test
     nosetests 
 
 

@@ -9,10 +9,10 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/stack1_p2</url>
 
-  <rosdep name="stack1_dep1" />
-  <rosdep name="stack1_dep2" />
+  <xylem name="stack1_dep1" />
+  <xylem name="stack1_dep2" />
 
-  <rosdep name="stack1_p2_dep1" />
+  <xylem name="stack1_p2_dep1" />
 
   <depend package="stack1_p1" />
 </package>

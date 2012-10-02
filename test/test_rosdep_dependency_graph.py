@@ -28,7 +28,7 @@
 # Author William Woodall/wjwwood@gmail.com
 
 def test_DependencyGraph_Linear():
-	from rosdep2.dependency_graph import DependencyGraph
+	from xylem2.dependency_graph import DependencyGraph
 	# Normal A-B-C
 	dg = DependencyGraph()
 	dg['A']['installer_key'] = 'a_installer'
@@ -45,7 +45,7 @@ def test_DependencyGraph_Linear():
 	assert result == expected, "Results did not match expectations: %s == %s"%(str(result),str(expected))
 
 def test_DependencyGraph_Cycle():
-	from rosdep2.dependency_graph import DependencyGraph
+	from xylem2.dependency_graph import DependencyGraph
 	# Full Loop A-B-C-A-...
 	dg = DependencyGraph()
 	dg['A']['installer_key'] = 'a_installer'
@@ -67,7 +67,7 @@ def test_DependencyGraph_Cycle():
 		assert False, "Throws and Exception, but not an AssertionError. Error was: %s: %s"%(type(e),str(e))
 
 def test_DependencyGraph_Short_Cycle():
-	from rosdep2.dependency_graph import DependencyGraph
+	from xylem2.dependency_graph import DependencyGraph
 	# Short cycle A-B-C-D-B-C-D-...
 	dg = DependencyGraph()
 	dg['A']['installer_key'] = 'a_installer'
@@ -92,7 +92,7 @@ def test_DependencyGraph_Short_Cycle():
 		assert False, "Throws and Exception, but not an AssertionError. Error was: %s: %s"%(type(e),str(e))
 
 def test_DependencyGraph_Invalid_Key():
-	from rosdep2.dependency_graph import DependencyGraph
+	from xylem2.dependency_graph import DependencyGraph
 	# Invalid graph A-B-C where C doesn't exist
 	dg = DependencyGraph()
 	dg['A']['installer_key'] = 'a_installer'
@@ -103,7 +103,7 @@ def test_DependencyGraph_Invalid_Key():
 	dg['B']['dependencies'] = ['C']
 	try:
 		result = dg.get_ordered_dependency_list()
-		assert False, "Doesn't fail, it should fail with an KeyError because of the invalid rosdep key."
+		assert False, "Doesn't fail, it should fail with an KeyError because of the invalid xylem key."
 	except KeyError as e:
 		if not str(e).endswith("does not exist in the dictionary of resolutions.'"):
 			assert False, "Throws KeyError, but with the wrong message. Error was: %s: %s"%(type(e),str(e))
@@ -111,7 +111,7 @@ def test_DependencyGraph_Invalid_Key():
 		assert False, "Throws and Exception, but not an KeyError. Error was: %s: %s"%(type(e),str(e))
 
 def test_DependencyGraph_Invalid_Key2():
-	from rosdep2.dependency_graph import DependencyGraph
+	from xylem2.dependency_graph import DependencyGraph
 	# Invalid graph A-B-C where B doesn't exist
 	dg = DependencyGraph()
 	dg['A']['installer_key'] = 'a_installer'
@@ -122,7 +122,7 @@ def test_DependencyGraph_Invalid_Key2():
 	dg['C']['dependencies'] = []
 	try:
 		result = dg.get_ordered_dependency_list()
-		assert False, "Doesn't fail, it should fail with an KeyError because of the invalid rosdep key."
+		assert False, "Doesn't fail, it should fail with an KeyError because of the invalid xylem key."
 	except KeyError as e:
 		if not str(e).endswith("does not exist in the dictionary of resolutions.'"):
 			assert False, "Throws KeyError, but with the wrong message. Error was: %s: %s"%(type(e),str(e))
@@ -130,7 +130,7 @@ def test_DependencyGraph_Invalid_Key2():
 		assert False, "Throws and Exception, but not an KeyError. Error was: %s: %s"%(type(e),str(e))
 
 def test_DependencyGraph_Multi_Root():
-	from rosdep2.dependency_graph import DependencyGraph
+	from xylem2.dependency_graph import DependencyGraph
 	# Multi root, shared dependency: A-B-C, D-C
 	dg = DependencyGraph()
 	dg['A']['installer_key'] = 'a_installer'
@@ -153,7 +153,7 @@ def test_DependencyGraph_Multi_Root():
 	assert result == expected, "Results did not match expectations: %s == %s"%(str(result),str(expected))
 
 def test_DependencyGraph_Realworld():
-	from rosdep2.dependency_graph import DependencyGraph
+	from xylem2.dependency_graph import DependencyGraph
 	# Real world example
 	dg = DependencyGraph()
 	dg['python-matplotlib']['installer_key'] = 'pip'

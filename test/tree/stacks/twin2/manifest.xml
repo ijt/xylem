@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/twin1_pkg</url>
 
-  <rosdep name="twin" />
+  <xylem name="twin" />
 </package>
 
 

@@ -27,10 +27,10 @@
 
 from mock import Mock
 
-def test_RosdepLoader():
+def test_xylemLoader():
     #tripwire tests
-    from rosdep2.loader import RosdepLoader
-    loader = RosdepLoader()
+    from xylem2.loader import xylemLoader
+    loader = xylemLoader()
     try:
         loader.load_view('foo', Mock())
         assert False, "should have raised NotImplemented"
@@ -48,6 +48,6 @@ def test_RosdepLoader():
         assert False, "should have raised NotImplementedError"
     except NotImplementedError: pass
     try:
-        loader.get_rosdeps('foo', implicit=False)
+        loader.get_xylems('foo', implicit=False)
         assert False, "should have raised NotImplementedError"
     except NotImplementedError: pass

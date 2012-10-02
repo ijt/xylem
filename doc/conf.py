@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# rosdep documentation build configuration file, created by
+# xylem documentation build configuration file, created by
 # sphinx-quickstart on Mon Sep 12 17:13:25 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -16,7 +16,7 @@ import sys, os
 import sys
 sys.path.insert(0, '../src')
 
-from rosdep2 import __version__
+from xylem2 import __version__
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -45,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'contents'
 
 # General information about the project.
-project = u'rosdep'
+project = u'xylem'
 copyright = u'2011, Willow Garage'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -172,7 +172,7 @@ html_additional_pages = {'index': 'index.html'}
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'rosdepdoc'
+htmlhelp_basename = 'xylemdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -186,7 +186,7 @@ htmlhelp_basename = 'rosdepdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('rosdep.tex', u'rosdep Documentation',
+  ('xylem.tex', u'xylem Documentation',
    u'Tully Foote, Ken Conley', 'manual'),
 ]
 
@@ -219,7 +219,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('man/rosdep', 'rosdep', u'rosdep command', [u'Tully Foote, Ken Conley'], 1)
+    ('man/xylem', 'xylem', u'xylem command', [u'Tully Foote, Ken Conley'], 1)
 ]
 
 

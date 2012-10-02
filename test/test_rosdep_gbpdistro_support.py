@@ -35,7 +35,7 @@ def get_test_dir():
 
 
 def test_url_constants():
-    from rosdep2.gbpdistro_support import FUERTE_GBPDISTRO_URL
+    from xylem2.gbpdistro_support import FUERTE_GBPDISTRO_URL
     for url_name, url in [
                           ('FUERTE_GBPDISTRO_URL', FUERTE_GBPDISTRO_URL)]:
         try:
@@ -46,12 +46,12 @@ def test_url_constants():
             assert False, "URL [%s][%s] failed to download" % (url_name, url)
 
 
-def test_download_gbpdistro_as_rosdep_data():
-    from rosdep2.gbpdistro_support import download_gbpdistro_as_rosdep_data
-    from rosdep2.gbpdistro_support import FUERTE_GBPDISTRO_URL
-    from rosdep2.rep3 import REP3_TARGETS_URL
-    from rosdep2 import DownloadFailure
-    data = download_gbpdistro_as_rosdep_data(FUERTE_GBPDISTRO_URL)
+def test_download_gbpdistro_as_xylem_data():
+    from xylem2.gbpdistro_support import download_gbpdistro_as_xylem_data
+    from xylem2.gbpdistro_support import FUERTE_GBPDISTRO_URL
+    from xylem2.rep3 import REP3_TARGETS_URL
+    from xylem2 import DownloadFailure
+    data = download_gbpdistro_as_xylem_data(FUERTE_GBPDISTRO_URL)
     # don't go beyond this, this test is just making sure the download
     # plumbing is correct, not the loader.
     for k in ['ros', 'catkin', 'genmsg']:
@@ -61,34 +61,34 @@ def test_download_gbpdistro_as_rosdep_data():
     # try with bad url to trigger exception handling
     try:
         # override targets URL with bad URL
-        download_gbpdistro_as_rosdep_data(FUERTE_GBPDISTRO_URL,
+        download_gbpdistro_as_xylem_data(FUERTE_GBPDISTRO_URL,
             targets_url='http://bad.ros.org/foo.yaml')
         assert False, "should have raised"
     except DownloadFailure:
         pass
     try:
         # use targets URL, which should have a bad format
-        download_gbpdistro_as_rosdep_data(REP3_TARGETS_URL)
+        download_gbpdistro_as_xylem_data(REP3_TARGETS_URL)
         assert False, "should have raised"
     except DownloadFailure:
         pass
 
 
-def test_gbprepo_to_rosdep_data_on_bad_inputs():
-    from rosdep2.gbpdistro_support import gbprepo_to_rosdep_data
-    from rosdep2 import InvalidData
+def test_gbprepo_to_xylem_data_on_bad_inputs():
+    from xylem2.gbpdistro_support import gbprepo_to_xylem_data
+    from xylem2 import InvalidData
     simple_gbpdistro = {'release-name': 'foorte',
                         'repositories': {},
                         'type': 'gbp'}
     targets = {'foorte': ['lucid', 'oneiric']}
     # test bad data
     try:
-        gbprepo_to_rosdep_data(simple_gbpdistro, [targets])
+        gbprepo_to_xylem_data(simple_gbpdistro, [targets])
         assert False, "should have raised"
     except InvalidData:
         pass
     try:
-        gbprepo_to_rosdep_data({
+        gbprepo_to_xylem_data({
             'targets': 1,
             'repositories': [],
             'type': 'gbp'}, targets)
@@ -96,13 +96,13 @@ def test_gbprepo_to_rosdep_data_on_bad_inputs():
     except InvalidData:
         pass
     try:
-        gbprepo_to_rosdep_data([], targets)
+        gbprepo_to_xylem_data([], targets)
         assert False, "should have raised"
     except InvalidData:
         pass
     # release-name must be in targets
     try:
-        gbprepo_to_rosdep_data({
+        gbprepo_to_xylem_data({
             'release-name': 'barte',
             'repositories': [],
             'type': 'gbp'}, targets)
@@ -111,7 +111,7 @@ def test_gbprepo_to_rosdep_data_on_bad_inputs():
         pass
     # gbp-distros must be list of dicts
     try:
-        gbprepo_to_rosdep_data({
+        gbprepo_to_xylem_data({
             'release-name': 'foorte',
             'repositories': [1],
             'type': 'gbp'}, targets)
@@ -123,7 +123,7 @@ def test_gbprepo_to_rosdep_data_on_bad_inputs():
         bad_example = {'name': 'common',
                        'target': [1],
                        'url': 'git://github.com/wg-debs/common_msgs.git'}
-        gbprepo_to_rosdep_data({
+        gbprepo_to_xylem_data({
             'release-name': 'foorte',
             'repositories': [bad_example],
             'type': 'gbp'}, targets)
@@ -132,17 +132,17 @@ def test_gbprepo_to_rosdep_data_on_bad_inputs():
         pass
 
 
-def test_gbprepo_to_rosdep_data_on_ok_input():
-    from rosdep2.gbpdistro_support import gbprepo_to_rosdep_data
+def test_gbprepo_to_xylem_data_on_ok_input():
+    from xylem2.gbpdistro_support import gbprepo_to_xylem_data
     simple_gbpdistro = {'release-name': 'foorte',
                         'repositories': {},
                         'type': 'gbp'}
     targets = {'foorte': ['lucid', 'oneiric']}
     # make sure our sample files work for the above checks before
     # proceeding to real data
-    rosdep_data = gbprepo_to_rosdep_data(simple_gbpdistro, targets)
-    assert rosdep_data is not None
-    assert {} == rosdep_data
+    xylem_data = gbprepo_to_xylem_data(simple_gbpdistro, targets)
+    assert xylem_data is not None
+    assert {} == xylem_data
 
     gbpdistro_data = {'release-name': 'foorte',
                       'repositories': {
@@ -161,9 +161,9 @@ def test_gbprepo_to_rosdep_data_on_ok_input():
                       'type': 'gbp',
                       }
 
-    rosdep_data = gbprepo_to_rosdep_data(gbpdistro_data, targets)
+    xylem_data = gbprepo_to_xylem_data(gbpdistro_data, targets)
     for k in ['foo', 'bar', 'gazebo', 'foo-bar']:
-        assert k in rosdep_data, k
+        assert k in xylem_data, k
 
     # all targets and name transform
     # These are from the 'common_msgs' repo above.
@@ -171,33 +171,33 @@ def test_gbprepo_to_rosdep_data_on_ok_input():
     v = 'ros-foorte-%s'
     for pkg in pkgs:
         for p in ['lucid', 'oneiric']:
-            rule = rosdep_data[pkg]['ubuntu'][p]
+            rule = xylem_data[pkg]['ubuntu'][p]
             assert rule['apt']['packages'] == [v % pkg], rule['apt']['packages']
         for p in ['maverick', 'natty']:
-            assert p not in rosdep_data[k]['ubuntu']
+            assert p not in xylem_data[k]['ubuntu']
 
     # target overrides
     pkg = 'gazebo'
     v = 'ros-foorte-gazebo'
     for p in ['lucid', 'natty']:
-        rule = rosdep_data[pkg]['ubuntu'][p]
+        rule = xylem_data[pkg]['ubuntu'][p]
         assert rule['apt']['packages'] == [v], rule['apt']['packages']
     for p in ['oneiric', 'precise']:
-        assert p not in rosdep_data[pkg]['ubuntu']
+        assert p not in xylem_data[pkg]['ubuntu']
 
     # target overrides
     # These are from the 'foo-bar' repo above.
     v = 'ros-foorte-foo-bar'
     for pkg in ['foo-bar']:
         for p in ['precise']:
-            rule = rosdep_data[pkg]['ubuntu'][p]
+            rule = xylem_data[pkg]['ubuntu'][p]
             assert rule['apt']['packages'] == [v], rule['apt']['packages']
         for p in ['oneiric', 'natty', 'lucid']:
-            assert p not in rosdep_data[pkg]['ubuntu']
+            assert p not in xylem_data[pkg]['ubuntu']
 
 
 def test_get_owner_name_homebrew():
-    from rosdep2.gbpdistro_support import get_owner_name
+    from xylem2.gbpdistro_support import get_owner_name
     empty_url = ''
     assert get_owner_name(empty_url) == 'ros', 'url: ' + empty_url
     https_test_url = 'https://github.com/' \

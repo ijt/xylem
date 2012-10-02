@@ -1,23 +1,23 @@
-rosdep command reference
+xylem command reference
 ========================
 
-.. _rosdep_usage:
+.. _xylem_usage:
 
 Synopsis
 --------
 
-**rosdep** <*command*> [*options*] [*args*]
+**xylem** <*command*> [*options*] [*args*]
 
 Description
 -----------
 
-The **rosdep** command helps you install external dependencies in an
+The **xylem** command helps you install external dependencies in an
 OS-independent manner.  For example, what Debian packages do you need
 in order to get the OpenGL headers on Ubuntu? How about OS X? Fedora?
-rosdep can answer this question for your platform and install the
+xylem can answer this question for your platform and install the
 necessary package(s).
 
-Run ``rosdep -h`` or ``rosdep <command> -h`` to access the built-in tool
+Run ``xylem -h`` or ``xylem <command> -h`` to access the built-in tool
 documentation.
  
 Commands
@@ -29,7 +29,7 @@ Commands
 
 **db**
 
-  Display the local rosdep database.
+  Display the local xylem database.
 
 **init**
 
@@ -41,25 +41,25 @@ Commands
 
 **keys <stacks-and-packages>...**
 
-  List the rosdep keys that the ROS packages depend on.
+  List the xylem keys that the ROS packages depend on.
 
-**resolve <rosdeps>...**
+**resolve <xylems>...**
 
-  Resolve <rosdeps> to system dependencies
+  Resolve <xylems> to system dependencies
 
 **update**
 
-  Update the local rosdep database based on the rosdep sources.
+  Update the local xylem database based on the xylem sources.
 
-**what-needs <rosdeps>...**
+**what-needs <xylems>...**
 
-  Print a list of packages that declare a rosdep on (at least
-  one of) <rosdeps>
+  Print a list of packages that declare a xylem on (at least
+  one of) <xylems>
 
-**where-defined <rosdeps>...**
+**where-defined <xylems>...**
 
-  Print a list of YAML files that declare a rosdep on (at least
-  one of) <rosdeps>
+  Print a list of YAML files that declare a xylem on (at least
+  one of) <xylems>
 
 Options
 -------
@@ -70,7 +70,7 @@ Options
   
 **-c SOURCES_CACHE_DIR, --sources-cache-dir=SOURCES_CACHE_DIR**
 
-  Override default sources cache directory (local rosdep database).
+  Override default sources cache directory (local xylem database).
   
 **-a, --all**
 

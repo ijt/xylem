@@ -6,20 +6,20 @@ import optparse
 import os
 import sys
 
-from rosdep2.platforms.brewmaker import get_org_name, get_repo_name, compute_tarball_url_for_latest
+from xylem2.platforms.brewmaker import get_org_name, get_repo_name, compute_tarball_url_for_latest
 
 PATTERN_GITHUB_WG_DEBS = 'git@github.com:wg-debs/%(repo_name)s.git'
 
 def usage():
-    print("""Usage: rosdep-gbp-brew <command> <args>
+    print("""Usage: xylem-gbp-brew <command> <args>
 
 Commands:
 
-rosdep-gbp-brew auto <wg-debs-repo-name>
-rosdep-gbp-brew url <git-url>
+xylem-gbp-brew auto <wg-debs-repo-name>
+xylem-gbp-brew url <git-url>
 
 Example:
-\trosdep-gbp-brew ros_comm
+\txylem-gbp-brew ros_comm
 """, file=sys.stderr)
 
 def gbp_brew_main(argv):

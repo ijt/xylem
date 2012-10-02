@@ -156,7 +156,7 @@ class SourceInstall(object):
         try:
             r.tarball = manifest["uri"]
         except KeyError:
-            raise InvalidRdmanifest("uri required for source rosdeps") 
+            raise InvalidRdmanifest("uri required for source xylems") 
         r.alternate_tarball = manifest.get("alternate-uri")
         r.tarball_md5sum = manifest.get("md5sum")
         return r
@@ -176,18 +176,18 @@ class SourceInstaller(PackageManagerInstaller):
         super(SourceInstaller, self).__init__(source_detect, supports_depends=True)
         self._rdmanifest_cache = {}
     
-    def resolve(self, rosdep_args):
+    def resolve(self, xylem_args):
         """
         :raises: :exc:`InvalidData` If format invalid or unable
           to retrieve rdmanifests.
         :returns: [SourceInstall] instances.
         """
         try:
-            url = rosdep_args["uri"]
+            url = xylem_args["uri"]
         except KeyError:
-            raise InvalidData("'uri' key required for source rosdeps") 
-        alt_url = rosdep_args.get("alternate-uri", None)
-        md5sum = rosdep_args.get("md5sum", None)
+            raise InvalidData("'uri' key required for source xylems") 
+        alt_url = xylem_args.get("alternate-uri", None)
+        md5sum = xylem_args.get("md5sum", None)
 
         # load manifest from cache or from web
         manifest = None
@@ -209,18 +209,18 @@ class SourceInstaller(PackageManagerInstaller):
 
     def get_install_command(self, resolved, interactive=True, reinstall=False):
         # Instead of attempting to describe the source-install steps
-        # inside of the rosdep command chain, we shell out to an
-        # external rosdep-source command.  This separation means that
-        # users can manually invoke rosdep-source and also keeps
+        # inside of the xylem command chain, we shell out to an
+        # external xylem-source command.  This separation means that
+        # users can manually invoke xylem-source and also keeps
         # 'get_install_command()' cleaner.
         packages = self.get_packages_to_install(resolved, reinstall=reinstall)
         commands = []
         for p in packages:
-            commands.append(['rosdep-source', 'install', p.manifest_url])
+            commands.append(['xylem-source', 'install', p.manifest_url])
         return commands
 
-    def get_depends(self, rosdep_args): 
-        return rosdep_args.get('depends', [])
+    def get_depends(self, xylem_args): 
+        return xylem_args.get('depends', [])
 
 def install_from_file(rdmanifest_file):
     with open(rdmanifest_file, 'r') as f:
@@ -266,7 +266,7 @@ def install_source(resolved):
 
     try:
         # This is a bit hacky.  Basically, don't unpack dmg files as
-        # we are currently using source rosdeps for Nvidia Cg.
+        # we are currently using source xylems for Nvidia Cg.
         if not filename.endswith('.dmg'):
             rd_debug("Extracting tarball")
             tarf = tarfile.open(filename)

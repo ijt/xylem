@@ -10,4 +10,4 @@ target
 build
 deb_dist
 dist
-src/rosdep.egg-info
+src/xylem.egg-info

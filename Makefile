@@ -1,6 +1,6 @@
 .PHONY: all setup clean_dist distro clean install deb_dist upload-packages upload-building upload testsetup test
 
-NAME='rosdep'
+NAME='xylem'
 VERSION=`python setup.py -V`
 
 OUTPUT_DIR=deb_dist
@@ -44,8 +44,8 @@ upload-building: deb_dist
 upload: upload-building upload-packages
 
 testsetup:
-	echo "running rosdep tests"
+	echo "running xylem tests"
 
 test: testsetup
-	nosetests --with-coverage --cover-package=rosdep2 --with-xunit test
+	nosetests --with-coverage --cover-package=xylem2 --with-xunit test
 

@@ -1,6 +1,6 @@
 """
-Helper routines for catkin.  These are distributed inside of rosdep2
-to protect catkin against future rosdep2 API updatese.  These helper
+Helper routines for catkin.  These are distributed inside of xylem2
+to protect catkin against future xylem2 API updatese.  These helper
 routines are assumed to run in an interactive mode with an end-user
 and thus return end-user oriented error messages.
 
@@ -11,7 +11,7 @@ Workflow::
 
     installer = get_installer(APT_INSTALLER)
     view = get_catkin_view(rosdistro_name, 'ubuntu', 'lucid')
-    resolve_for_os(rosdep_key, view, installer, 'ubuntu', 'lucid')
+    resolve_for_os(xylem_key, view, installer, 'ubuntu', 'lucid')
 
 """
 
@@ -28,7 +28,7 @@ from .platforms.pip import PIP_INSTALLER
 from .platforms.redhat import YUM_INSTALLER
 from .rep3 import download_targets_data
 from .sources_list import get_sources_list_dir, DataSourceMatcher, SourcesListLoader
-from .lookup import RosdepLookup
+from .lookup import xylemLookup
 from .rospkg_loader import DEFAULT_VIEW_KEY
 
 class ValidationFailed(Exception):
@@ -72,22 +72,22 @@ default_installers = {
     }
 
 
-def resolve_for_os(rosdep_key, view, installer, os_name, os_version):
+def resolve_for_os(xylem_key, view, installer, os_name, os_version):
     """
-    Resolve rosdep key to dependencies.
+    Resolve xylem key to dependencies.
     
     :param os_name: OS name, e.g. 'ubuntu'
 
-    :raises: :exc:`rosdep2.ResolutionError`
+    :raises: :exc:`xylem2.ResolutionError`
     """
-    d = view.lookup(rosdep_key)
+    d = view.lookup(xylem_key)
     inst_key, rule = d.get_rule_for_platform(os_name, os_version, default_installers[os_name], APT_INSTALLER)
     assert inst_key == APT_INSTALLER
     return installer.resolve(rule)
 
 
-def update_rosdep():
-    call(('rosdep', 'update'), pipe=PIPE)
+def update_xylem():
+    call(('xylem', 'update'), pipe=PIPE)
 
 
 def get_catkin_view(rosdistro_name, os_name, os_version, update=True):
@@ -96,22 +96,22 @@ def get_catkin_view(rosdistro_name, os_name, os_version, update=True):
     """
     sources_list_dir = get_sources_list_dir()
     if not os.path.exists(sources_list_dir):
-        raise ValidationFailed("""rosdep database is not initialized, please run:
-\tsudo rosdep init
+        raise ValidationFailed("""xylem database is not initialized, please run:
+\tsudo xylem init
 """)
 
     if update:
-        update_rosdep()
+        update_xylem()
 
     sources_matcher = DataSourceMatcher([rosdistro_name, os_name, os_version])
     sources_loader = SourcesListLoader.create_default(matcher=sources_matcher)
     if not (sources_loader.sources):
-        raise ValidationFailed("""rosdep database does not have any sources.
+        raise ValidationFailed("""xylem database does not have any sources.
 Please make sure you have a valid configuration in:
 \t%s
 """%(sources_list_dir))
     
     # for vestigial reasons, using the roskg loader, but we're only
     # actually using the backend db as resolution is not resource-name based
-    lookup = RosdepLookup.create_from_rospkg(sources_loader=sources_loader)
-    return lookup.get_rosdep_view(DEFAULT_VIEW_KEY)
+    lookup = xylemLookup.create_from_rospkg(sources_loader=sources_loader)
+    return lookup.get_xylem_view(DEFAULT_VIEW_KEY)

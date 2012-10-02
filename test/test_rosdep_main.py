@@ -34,8 +34,8 @@ import rospkg.os_detect
 
 import unittest
 
-GITHUB_BASE_URL = 'https://github.com/ros/rosdistro/raw/master/rosdep/base.yaml'
-GITHUB_PYTHON_URL = 'https://github.com/ros/rosdistro/raw/master/rosdep/python.yaml'
+GITHUB_BASE_URL = 'https://github.com/ros/rosdistro/raw/master/xylem/base.yaml'
+GITHUB_PYTHON_URL = 'https://github.com/ros/rosdistro/raw/master/xylem/python.yaml'
 
 def get_test_dir():
     return os.path.abspath(os.path.dirname(__file__))
@@ -48,7 +48,7 @@ def get_cache_dir():
     assert os.path.isdir(p)
     return p
 
-from rosdep2.main import rosdep_main
+from xylem2.main import xylem_main
 
 from contextlib import contextmanager
 @contextmanager
@@ -65,10 +65,10 @@ def fakeout():
     
 # the goal of these tests is only to test that we are wired into the
 # APIs.  More exhaustive tests are at the unit level.
-class TestRosdepMain(unittest.TestCase):
+class TestxylemMain(unittest.TestCase):
     def setUp(self):
-        if 'ROSDEP_DEBUG' in os.environ:
-            del os.environ['ROSDEP_DEBUG']
+        if 'xylem_DEBUG' in os.environ:
+            del os.environ['xylem_DEBUG']
         self.old_rr = rospkg.get_ros_root()
         self.old_rpp = rospkg.get_ros_package_path()
         if 'ROS_ROOT' in os.environ:
@@ -88,7 +88,7 @@ class TestRosdepMain(unittest.TestCase):
                          ['check', 'rospack_fake', '--os', 'ubuntulucid'],
                          ]:
             try:
-                rosdep_main(commands+cmd_extras)
+                xylem_main(commands+cmd_extras)
                 assert False, "system exit should have occurred"
             except SystemExit:
                 pass
@@ -99,7 +99,7 @@ class TestRosdepMain(unittest.TestCase):
 
         with fakeout() as b:
             try:
-                rosdep_main(['check', 'python_dep']+cmd_extras)
+                xylem_main(['check', 'python_dep']+cmd_extras)
             except SystemExit:
                 assert False, "system exit occurred: %s\n%s"%(b[0].getvalue(), b[1].getvalue())
 
@@ -110,17 +110,17 @@ class TestRosdepMain(unittest.TestCase):
             osd = rospkg.os_detect.OsDetect()
             override = "%s:%s"%(osd.get_name(), osd.get_codename())
             with fakeout() as b:
-                rosdep_main(['check', 'python_dep', '--os', override]+cmd_extras)
+                xylem_main(['check', 'python_dep', '--os', override]+cmd_extras)
                 stdout, stderr = b
                 assert stdout.getvalue().strip() == "All system dependencies have been satisified"
                 assert not stderr.getvalue(), stderr.getvalue()
         except SystemExit:
             assert False, "system exit occurred"
 
-        # this used to abort, but now rosdep assumes validity for even empty stack args
+        # this used to abort, but now xylem assumes validity for even empty stack args
         try:
             with fakeout() as b:
-                rosdep_main(['check', 'packageless']+cmd_extras)
+                xylem_main(['check', 'packageless']+cmd_extras)
                 stdout, stderr = b
                 assert stdout.getvalue().strip() == "All system dependencies have been satisified"
                 assert not stderr.getvalue(), stderr.getvalue()
@@ -128,7 +128,7 @@ class TestRosdepMain(unittest.TestCase):
             assert False, "system exit occurred"
 
         try:
-            rosdep_main(['check', 'nonexistent']+cmd_extras)
+            xylem_main(['check', 'nonexistent']+cmd_extras)
             assert False, "system exit should have occurred"
         except SystemExit:
             pass
@@ -140,19 +140,19 @@ class TestRosdepMain(unittest.TestCase):
         try:
             # python must have already been installed
             with fakeout() as b:
-                rosdep_main(['install', 'python_dep']+cmd_extras)
+                xylem_main(['install', 'python_dep']+cmd_extras)
                 stdout, stderr = b
-                assert "All required rosdeps installed" in stdout.getvalue(), stdout.getvalue()
+                assert "All required xylems installed" in stdout.getvalue(), stdout.getvalue()
                 assert not stderr.getvalue(), stderr.getvalue()
             with fakeout() as b:
-                rosdep_main(['install', 'python_dep', '-r']+cmd_extras)
+                xylem_main(['install', 'python_dep', '-r']+cmd_extras)
                 stdout, stderr = b
-                assert "All required rosdeps installed" in stdout.getvalue(), stdout.getvalue()
+                assert "All required xylems installed" in stdout.getvalue(), stdout.getvalue()
                 assert not stderr.getvalue(), stderr.getvalue()
         except SystemExit:
             assert False, "system exit occurred: "+b[1].getvalue()
         try:
-            rosdep_main(['check', 'nonexistent'])
+            xylem_main(['check', 'nonexistent'])
             assert False, "system exit should have occurred"
         except SystemExit:
             pass
@@ -164,7 +164,7 @@ class TestRosdepMain(unittest.TestCase):
             for command in (['where_defined', 'testpython'], ['where_defined', 'testpython']):
                 with fakeout() as b:
                     # set os to ubuntu so this test works on different platforms
-                    rosdep_main(command + ['-c', sources_cache, '--os=ubuntu:lucid'])
+                    xylem_main(command + ['-c', sources_cache, '--os=ubuntu:lucid'])
                     stdout, stderr = b
                     output = stdout.getvalue().strip()
                     assert output == expected, output
@@ -177,13 +177,13 @@ class TestRosdepMain(unittest.TestCase):
             cmd_extras = ['-c', sources_cache]
             expected = ['python_dep']
             with fakeout() as b:
-                rosdep_main(['what-needs', 'testpython']+cmd_extras)
+                xylem_main(['what-needs', 'testpython']+cmd_extras)
                 stdout, stderr = b
                 output = stdout.getvalue().strip()
                 assert output.split('\n') == expected
             expected = ['python_dep']
             with fakeout() as b:
-                rosdep_main(['what_needs', 'testpython', '--os', 'ubuntu:lucid', '--verbose']+cmd_extras)
+                xylem_main(['what_needs', 'testpython', '--os', 'ubuntu:lucid', '--verbose']+cmd_extras)
                 stdout, stderr = b
                 output = stdout.getvalue().strip()
                 assert output.split('\n') == expected
@@ -196,18 +196,18 @@ class TestRosdepMain(unittest.TestCase):
 
         try:
             with fakeout() as b:
-                rosdep_main(['keys', 'rospack_fake']+cmd_extras)
+                xylem_main(['keys', 'rospack_fake']+cmd_extras)
                 stdout, stderr = b
                 assert stdout.getvalue().strip() == "testtinyxml", stdout.getvalue()
                 assert not stderr.getvalue(), stderr.getvalue()
             with fakeout() as b:
-                rosdep_main(['keys', 'rospack_fake', '--os', 'ubuntu:lucid', '--verbose']+cmd_extras)
+                xylem_main(['keys', 'rospack_fake', '--os', 'ubuntu:lucid', '--verbose']+cmd_extras)
                 stdout, stderr = b
                 assert stdout.getvalue().strip() == "testtinyxml", stdout.getvalue()
         except SystemExit:
             assert False, "system exit occurred"
         try:
-            rosdep_main(['keys', 'nonexistent']+cmd_extras)
+            xylem_main(['keys', 'nonexistent']+cmd_extras)
             assert False, "system exit should have occurred"
         except SystemExit:
             pass

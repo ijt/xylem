@@ -1,62 +1,62 @@
 Overview
 ========
 
-Installing rosdep
+Installing xylem
 -----------------
 
-rosdep2 is available using pip or easy_install::
+xylem2 is available using pip or easy_install::
 
-    sudo pip install -U rosdep
+    sudo pip install -U xylem
 
 or::
 
-    sudo easy_install -U rosdep rospkg
+    sudo easy_install -U xylem rospkg
 
 
 
-Setting up rosdep
+Setting up xylem
 -----------------
 
-rosdep needs to be initialized and updated to use::
+xylem needs to be initialized and updated to use::
 
-    sudo rosdep init
-    rosdep update
+    sudo xylem init
+    xylem update
 
-``sudo rosdep init`` will create a `sources list <sources_list>`_
-directory in ``/etc/ros/rosdep/sources.list.d`` that controls where
-rosdep gets its data from.
+``sudo xylem init`` will create a `sources list <sources_list>`_
+directory in ``/etc/ros/xylem/sources.list.d`` that controls where
+xylem gets its data from.
 
-``rosdep update`` reads through this sources list to initialize your
+``xylem update`` reads through this sources list to initialize your
 local database.
 
-Updating rosdep
+Updating xylem
 ---------------
 
-You can update your rosdep database by running::
+You can update your xylem database by running::
 
-    rosdep update
+    xylem update
 
 
-Installating rosdeps
+Installating xylems
 --------------------
 
-rosdep takes in the name of a ROS stack or package that you wish to
+xylem takes in the name of a ROS stack or package that you wish to
 install the system dependencies for.
 
 Common installation workflow::
 
-    $ rosdep check ros_comm
+    $ xylem check ros_comm
     All system dependencies have been satisified
-    $ rosdep install geometry
+    $ xylem install geometry
 
-If you're worried about ``rosdep install`` bringing in system
-dependencies you don't want, you can run ``rosdep install -s <args>``
+If you're worried about ``xylem install`` bringing in system
+dependencies you don't want, you can run ``xylem install -s <args>``
 instead to "simulate" the installation.  You will be able to see the
-commands that rosdep would have run.
+commands that xylem would have run.
 
 Example::
 
-    $ rosdep install -s ros_comm
+    $ xylem install -s ros_comm
     #[apt] Installation commands:
       sudo apt-get install libapr1-dev
       sudo apt-get install libaprutil1-dev
@@ -68,16 +68,16 @@ Example::
       sudo apt-get install python-paramiko
       sudo apt-get install python-yaml
     
-You can also query rosdep to find out more information about specific
+You can also query xylem to find out more information about specific
 dependencies::
 
-    $ rosdep keys roscpp
+    $ xylem keys roscpp
     pkg-config
 
-    $ rosdep resolve pkg-config
+    $ xylem resolve pkg-config
     pkg-config
 
-    $ rosdep keys geometry
+    $ xylem keys geometry
     eigen
     apr
     glut
@@ -90,10 +90,10 @@ dependencies::
     log4cxx
     pkg-config
 
-    $ rosdep resolve eigen
+    $ xylem resolve eigen
     libeigen3-dev
 
 
 
-For more information, please see the :ref:`command reference <rosdep_usage>`.
+For more information, please see the :ref:`command reference <xylem_usage>`.
 

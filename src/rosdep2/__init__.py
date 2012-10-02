@@ -28,7 +28,7 @@
 # Author Tully Foote/tfoote@willowgarage.com, Ken Conley/kwc@willowgarage.com
 
 """
-rosdep library and command-line tool
+xylem library and command-line tool
 """
 
 from __future__ import print_function
@@ -40,23 +40,23 @@ import sys
 try:
     from .installers import InstallerContext, Installer, \
             PackageManagerInstaller
-    from .core import RosdepInternalError, InstallFailed, UnsupportedOs, \
+    from .core import xylemInternalError, InstallFailed, UnsupportedOs, \
             InvalidData, DownloadFailure
-    from .model import RosdepDatabase, RosdepDatabaseEntry
-    from .lookup import RosdepDefinition, RosdepView, RosdepLookup, \
+    from .model import xylemDatabase, xylemDatabaseEntry
+    from .lookup import xylemDefinition, xylemView, xylemLookup, \
             ResolutionError
-    from .loader import RosdepLoader
+    from .loader import xylemLoader
 except ImportError:
     # soft-fail if rospkg not available.  Need this backoff behavior
     # in order to support setting __version__ in the module.
-    print("failed to load symbols, rosdep will not function properly",
+    print("failed to load symbols, xylem will not function properly",
             file=sys.stderr)
 
 # don't let import error take down code as when attempting to compute version number
 try:
     from .rospkg_loader import RosPkgLoader
 except ImportError:
-    print("Cannot import rospkg, rosdep will not function properly", 
+    print("Cannot import rospkg, xylem will not function properly", 
             file=sys.stderr)
 
 
@@ -116,11 +116,11 @@ def get_default_installer(installer_context=None, verbose=False):
     return installer, installer_keys, default_key, os_name, os_version
 
 __all__ = ['InstallerContext', 'Installer', 'PackageManagerInstaller',
-        'RosdepInternalError', 'InstallFailed', 'UnsupportedOs', 'InvalidData',
+        'xylemInternalError', 'InstallFailed', 'UnsupportedOs', 'InvalidData',
         'DownloadFailure',
-        'RosdepDatabase', 'RosdepDatabaseEntry',
-        'RosdepDefinition', 'RosdepView', 'RosdepLookup', 'ResolutionError',
-        'RosdepLoader', 'RosPkgLoader',
+        'xylemDatabase', 'xylemDatabaseEntry',
+        'xylemDefinition', 'xylemView', 'xylemLookup', 'ResolutionError',
+        'xylemLoader', 'RosPkgLoader',
         'get_default_installer', 
         'create_default_installer_context',
         ]

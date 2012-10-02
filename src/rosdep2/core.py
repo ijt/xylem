@@ -32,7 +32,7 @@ import sys
 import traceback
 
 def rd_debug(s):
-    if "ROSDEP_DEBUG" in os.environ:
+    if "xylem_DEBUG" in os.environ:
         print(s)
 
 def print_bold(msg):
@@ -47,7 +47,7 @@ def print_bold(msg):
     
 class InvalidData(Exception):
     """
-    Data is not in valid rosdep format.
+    Data is not in valid xylem format.
     """
 
     def __init__(self, message, origin=None):
@@ -57,7 +57,7 @@ class InvalidData(Exception):
 class UnsupportedOs(Exception):
     pass
     
-class RosdepInternalError(Exception):
+class xylemInternalError(Exception):
 
     def __init__(self, e, message=None):
         self.error = e

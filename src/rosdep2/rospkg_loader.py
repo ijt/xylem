@@ -28,7 +28,7 @@
 # Author Ken Conley/kwc@willowgarage.com
 
 """
-Library for loading rosdep files from the ROS package/stack
+Library for loading xylem files from the ROS package/stack
 filesystem.
 """
 
@@ -39,7 +39,7 @@ import yaml
 
 import rospkg
 
-from .loader import RosdepLoader, InvalidData, ROSDEP_YAML
+from .loader import xylemLoader, InvalidData, xylem_YAML
 from .sources_list import SourcesListLoader
 
 # Default view key is the view that packages that are not in stacks
@@ -48,7 +48,7 @@ from .sources_list import SourcesListLoader
 DEFAULT_VIEW_KEY='*default*'
 
 # Implementation details: this API was originally conceived under the
-# rosdep 1 design.  It has since been retrofitted for the rosdep 2
+# xylem 1 design.  It has since been retrofitted for the xylem 2
 # design, which means it is a bit overbuilt.  There really is no need
 # for a notion of views for rospkg -- all rospkgs have the same view.
 # It we be nice to refactor this API into something much, much
@@ -57,7 +57,7 @@ DEFAULT_VIEW_KEY='*default*'
 # resources and SourcesListLoader would build a *single* view that was
 # no longer resource-dependent.
 
-class RosPkgLoader(RosdepLoader):
+class RosPkgLoader(xylemLoader):
     
     def __init__(self, rospack=None, rosstack=None, underlay_key=None):
         """
@@ -71,26 +71,26 @@ class RosPkgLoader(RosdepLoader):
 
         self._rospack = rospack
         self._rosstack = rosstack
-        self._rosdep_yaml_cache = {}
+        self._xylem_yaml_cache = {}
         self._underlay_key = underlay_key
         
         # cache computed list of loadable resources
         self._loadable_resource_cache = None
         
-    def load_view(self, view_name, rosdep_db, verbose=False):
+    def load_view(self, view_name, xylem_db, verbose=False):
         """
-        Load view data into *rosdep_db*. If the view has already
-        been loaded into *rosdep_db*, this method does nothing.  If
-        view has no rosdep data, it will be initialized with an empty
+        Load view data into *xylem_db*. If the view has already
+        been loaded into *xylem_db*, this method does nothing.  If
+        view has no xylem data, it will be initialized with an empty
         data map.
 
-        :raises: :exc:`InvalidData` if view rosdep.yaml is invalid
+        :raises: :exc:`InvalidData` if view xylem.yaml is invalid
         :raises: :exc:`rospkg.ResourceNotFound` if view cannot be located
 
         :returns: ``True`` if view was loaded.  ``False`` if view
           was already loaded.
         """
-        if rosdep_db.is_loaded(view_name):
+        if xylem_db.is_loaded(view_name):
             return
         if not view_name in self.get_loadable_views():
             raise rospkg.ResourceNotFound(view_name)
@@ -104,7 +104,7 @@ class RosPkgLoader(RosdepLoader):
         else:
             view_dependencies = []
         # no rospkg view has actual data
-        rosdep_db.set_view_data(view_name, {}, view_dependencies, '<nodata>')
+        xylem_db.set_view_data(view_name, {}, view_dependencies, '<nodata>')
 
     def get_loadable_views(self):
         """
@@ -121,16 +121,16 @@ class RosPkgLoader(RosdepLoader):
             self._loadable_resource_cache = loadable_list[:]
         return self._loadable_resource_cache
 
-    def get_rosdeps(self, resource_name, implicit=True):
+    def get_xylems(self, resource_name, implicit=True):
         """
         If *resource_name* is a stack, returns an empty list.
         
         :raises: :exc:`rospkg.ResourceNotFound` if *resource_name* cannot be found.
         """
         if resource_name in self.get_loadable_resources():
-            return self._rospack.get_rosdeps(resource_name, implicit=implicit)
+            return self._rospack.get_xylems(resource_name, implicit=implicit)
         elif resource_name in self._rosstack.list():
-            # stacks currently do not have rosdeps of their own, implicit or otherwise
+            # stacks currently do not have xylems of their own, implicit or otherwise
             return []
         else:
             raise rospkg.ResourceNotFound(resource_name)

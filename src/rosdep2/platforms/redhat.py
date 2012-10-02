@@ -76,7 +76,7 @@ def rpm_detect(packages, exec_fn=None):
 class YumInstaller(PackageManagerInstaller):
     """
     This class provides the functions for installing using yum
-    it's methods partially implement the Rosdep OS api to complement 
+    it's methods partially implement the xylem OS api to complement 
     the roslib.OSDetect API.
     """
 

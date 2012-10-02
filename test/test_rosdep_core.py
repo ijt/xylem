@@ -27,23 +27,23 @@
 
 import os
 
-def test_RosdepInternalError():
-    from rosdep2.core import RosdepInternalError
+def test_xylemInternalError():
+    from xylem2.core import xylemInternalError
     try:
         raise Exception('foo')
     except Exception as e:
-        ex = RosdepInternalError(e)
+        ex = xylemInternalError(e)
         assert e == ex.error
     
 def test_rd_debug():
     # just tripwire/coverage
-    from rosdep2.core import rd_debug
+    from xylem2.core import rd_debug
     rd_debug('foo')
-    os.environ['ROSDEP_DEBUG'] = '1'
+    os.environ['xylem_DEBUG'] = '1'
     rd_debug('foo')    
 
 def test_InvalidData():
-    from rosdep2.core import InvalidData
+    from xylem2.core import InvalidData
     try:
         raise InvalidData('hi')
     except InvalidData as ex:
