@@ -27,14 +27,14 @@
 
 def test_xylemDatabaseEntry():
     # not muich to test with container
-    from xylem2.model import xylemDatabaseEntry
+    from xylem.model import xylemDatabaseEntry
     d = xylemDatabaseEntry({'a': 1}, [], 'foo')
     assert d.xylem_data == {'a': 1}
     assert d.view_dependencies == []
     assert d.origin == 'foo'
 
 def test_xylemDatabase():
-    from xylem2.model import xylemDatabase
+    from xylem.model import xylemDatabase
 
     db = xylemDatabase()
     assert not db.is_loaded('foo')
@@ -70,7 +70,7 @@ def test_xylemDatabase():
     
 
 def test_xylemDatabase_get_view_dependencies():
-    from xylem2.model import xylemDatabase
+    from xylem.model import xylemDatabase
 
     data = {'a': 1}
     db = xylemDatabase()

@@ -35,7 +35,7 @@ def get_test_dir():
 
 
 def test_url_constants():
-    from xylem2.gbpdistro_support import FUERTE_GBPDISTRO_URL
+    from xylem.gbpdistro_support import FUERTE_GBPDISTRO_URL
     for url_name, url in [
                           ('FUERTE_GBPDISTRO_URL', FUERTE_GBPDISTRO_URL)]:
         try:
@@ -47,10 +47,10 @@ def test_url_constants():
 
 
 def test_download_gbpdistro_as_xylem_data():
-    from xylem2.gbpdistro_support import download_gbpdistro_as_xylem_data
-    from xylem2.gbpdistro_support import FUERTE_GBPDISTRO_URL
-    from xylem2.rep3 import REP3_TARGETS_URL
-    from xylem2 import DownloadFailure
+    from xylem.gbpdistro_support import download_gbpdistro_as_xylem_data
+    from xylem.gbpdistro_support import FUERTE_GBPDISTRO_URL
+    from xylem.rep3 import REP3_TARGETS_URL
+    from xylem import DownloadFailure
     data = download_gbpdistro_as_xylem_data(FUERTE_GBPDISTRO_URL)
     # don't go beyond this, this test is just making sure the download
     # plumbing is correct, not the loader.
@@ -75,8 +75,8 @@ def test_download_gbpdistro_as_xylem_data():
 
 
 def test_gbprepo_to_xylem_data_on_bad_inputs():
-    from xylem2.gbpdistro_support import gbprepo_to_xylem_data
-    from xylem2 import InvalidData
+    from xylem.gbpdistro_support import gbprepo_to_xylem_data
+    from xylem import InvalidData
     simple_gbpdistro = {'release-name': 'foorte',
                         'repositories': {},
                         'type': 'gbp'}
@@ -133,7 +133,7 @@ def test_gbprepo_to_xylem_data_on_bad_inputs():
 
 
 def test_gbprepo_to_xylem_data_on_ok_input():
-    from xylem2.gbpdistro_support import gbprepo_to_xylem_data
+    from xylem.gbpdistro_support import gbprepo_to_xylem_data
     simple_gbpdistro = {'release-name': 'foorte',
                         'repositories': {},
                         'type': 'gbp'}
@@ -197,7 +197,7 @@ def test_gbprepo_to_xylem_data_on_ok_input():
 
 
 def test_get_owner_name_homebrew():
-    from xylem2.gbpdistro_support import get_owner_name
+    from xylem.gbpdistro_support import get_owner_name
     empty_url = ''
     assert get_owner_name(empty_url) == 'ros', 'url: ' + empty_url
     https_test_url = 'https://github.com/' \

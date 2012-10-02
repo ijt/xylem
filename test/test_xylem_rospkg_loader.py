@@ -49,9 +49,9 @@ def get_rospkg():
 def test_RosPkgLoader():
     from rospkg import ResourceNotFound
 
-    from xylem2.model import xylemDatabase
-    from xylem2.rospkg_loader import RosPkgLoader, DEFAULT_VIEW_KEY
-    from xylem2.loader import InvalidData
+    from xylem.model import xylemDatabase
+    from xylem.rospkg_loader import RosPkgLoader, DEFAULT_VIEW_KEY
+    from xylem.loader import InvalidData
     
     # Due to xylem 2/REP 125 changes, this test is a bit overbuilt.
     # All stacks return the same.
@@ -111,9 +111,9 @@ def test_RosPkgLoader():
 def test_RosPkgLoader_with_underlay_key():
     from rospkg import ResourceNotFound
 
-    from xylem2.model import xylemDatabase
-    from xylem2.rospkg_loader import RosPkgLoader, DEFAULT_VIEW_KEY
-    from xylem2.loader import InvalidData
+    from xylem.model import xylemDatabase
+    from xylem.rospkg_loader import RosPkgLoader, DEFAULT_VIEW_KEY
+    from xylem.loader import InvalidData
     
     # configure inside of the test tree
     rospack, rosstack = get_rospkg()
@@ -159,7 +159,7 @@ def test_RosPkgLoader_with_underlay_key():
     except ResourceNotFound: pass
 
 def test_RosPkgLoader_get_loadable():
-    from xylem2.rospkg_loader import RosPkgLoader
+    from xylem.rospkg_loader import RosPkgLoader
     
     rospack, rosstack = get_rospkg()
     loader = RosPkgLoader(rospack, rosstack)

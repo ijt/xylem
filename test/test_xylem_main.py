@@ -48,7 +48,7 @@ def get_cache_dir():
     assert os.path.isdir(p)
     return p
 
-from xylem2.main import xylem_main
+from xylem.main import xylem_main
 
 from contextlib import contextmanager
 @contextmanager

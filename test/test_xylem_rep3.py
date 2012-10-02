@@ -32,7 +32,7 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'sources.list.d'))
 
 def test_url_constants():
-    from xylem2.rep3 import REP3_TARGETS_URL
+    from xylem.rep3 import REP3_TARGETS_URL
     for url_name, url in [('REP3_TARGETS_URL', REP3_TARGETS_URL),
                           ]:
         try:
@@ -43,8 +43,8 @@ def test_url_constants():
             assert False, "URL [%s][%s] failed to download"%(url_name, url)
 
 def test_download_targets_data():
-    from xylem2.rep3 import download_targets_data, REP3_TARGETS_URL
-    from xylem2 import DownloadFailure
+    from xylem.rep3 import download_targets_data, REP3_TARGETS_URL
+    from xylem import DownloadFailure
     data = download_targets_data(REP3_TARGETS_URL)
     assert type(data) is dict
     assert 'electric' in data

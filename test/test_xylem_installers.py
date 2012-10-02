@@ -42,7 +42,7 @@ def get_cache_dir():
     return p
 
 def create_test_SourcesListLoader():
-    from xylem2.sources_list import SourcesListLoader
+    from xylem.sources_list import SourcesListLoader
     return SourcesListLoader.create_default(sources_cache_dir=get_cache_dir(), verbose=True)
 
 def get_test_tree_dir():
@@ -58,7 +58,7 @@ def get_test_rospkgs():
     return rospack, rosstack
 
 def test_InstallerContext_ctor():
-    from xylem2.installers import InstallerContext
+    from xylem.installers import InstallerContext
     from rospkg.os_detect import OsDetect
 
     context = InstallerContext()
@@ -78,7 +78,7 @@ def test_InstallerContext_ctor():
     
 def test_InstallerContext_get_os_version_type():
     from rospkg.os_detect import OS_UBUNTU
-    from xylem2.installers import InstallerContext, TYPE_CODENAME, TYPE_VERSION
+    from xylem.installers import InstallerContext, TYPE_CODENAME, TYPE_VERSION
     context = InstallerContext()
 
     try:
@@ -92,7 +92,7 @@ def test_InstallerContext_get_os_version_type():
     assert TYPE_CODENAME == context.get_os_version_type(OS_UBUNTU)
     
 def test_InstallerContext_os_version_and_name():
-    from xylem2.installers import InstallerContext, TYPE_CODENAME, TYPE_VERSION
+    from xylem.installers import InstallerContext, TYPE_CODENAME, TYPE_VERSION
     context = InstallerContext()
     context.set_verbose(True)
     os_name, os_version = context.get_os_name_and_version()
@@ -121,7 +121,7 @@ def test_InstallerContext_os_version_and_name():
     assert os_version == 'fakeos-version', os_version
     
 def test_InstallerContext_installers():
-    from xylem2.installers import InstallerContext, Installer
+    from xylem.installers import InstallerContext, Installer
     from rospkg.os_detect import OsDetect
     detect = OsDetect()
     context = InstallerContext(detect)
@@ -190,7 +190,7 @@ def test_InstallerContext_installers():
     assert set(context.get_installer_keys()) == set([key, key2])
 
 def test_InstallerContext_os_installers():
-    from xylem2.installers import InstallerContext, Installer
+    from xylem.installers import InstallerContext, Installer
     from rospkg.os_detect import OsDetect
     detect = OsDetect()
     context = InstallerContext(detect)
@@ -261,7 +261,7 @@ def test_InstallerContext_os_installers():
 
 
 def test_Installer_tripwire():
-    from xylem2.installers import Installer
+    from xylem.installers import Installer
     try:
         Installer().is_installed('foo')
         assert False
@@ -290,15 +290,15 @@ def detect_fn_single(packages):
 
 
 def test_PackageManagerInstaller():
-    from xylem2.installers import PackageManagerInstaller
+    from xylem.installers import PackageManagerInstaller
     try:
         PackageManagerInstaller(detect_fn_all).get_install_command(['foo'])
         assert False
     except NotImplementedError: pass
 
 def test_PackageManagerInstaller_resolve():
-    from xylem2 import InvalidData
-    from xylem2.installers import PackageManagerInstaller
+    from xylem import InvalidData
+    from xylem.installers import PackageManagerInstaller
 
     installer = PackageManagerInstaller(detect_fn_all)
     assert ['baz'] == installer.resolve(dict(depends=['foo', 'bar'], packages=['baz']))
@@ -321,7 +321,7 @@ def test_PackageManagerInstaller_resolve():
     except InvalidData: pass
 
 def test_PackageManagerInstaller_depends():
-    from xylem2.installers import PackageManagerInstaller
+    from xylem.installers import PackageManagerInstaller
 
     installer = PackageManagerInstaller(detect_fn_all, supports_depends=True)
     assert ['foo', 'bar'] == installer.get_depends(dict(depends=['foo', 'bar'], packages=['baz']))
@@ -329,7 +329,7 @@ def test_PackageManagerInstaller_depends():
     assert [] == installer.get_depends(dict(depends=['foo', 'bar'], packages=['baz']))
 
 def test_PackageManagerInstaller_unique():
-    from xylem2.installers import PackageManagerInstaller
+    from xylem.installers import PackageManagerInstaller
 
     installer = PackageManagerInstaller(detect_fn_all)
 
@@ -344,7 +344,7 @@ def test_PackageManagerInstaller_unique():
     assert set(['a', 'b', 'c']) == set(installer.unique(['a', 'b'], ['c', 'a']))    
 
 def test_PackageManagerInstaller_is_installed():
-    from xylem2.installers import PackageManagerInstaller
+    from xylem.installers import PackageManagerInstaller
 
     installer = PackageManagerInstaller(detect_fn_all)
     for r in ['a', 'b', 'c']:
@@ -354,7 +354,7 @@ def test_PackageManagerInstaller_is_installed():
         assert False == installer.is_installed(r), installer.is_installed(r)
 
 def test_PackageManagerInstaller_get_packages_to_install():
-    from xylem2.installers import PackageManagerInstaller
+    from xylem.installers import PackageManagerInstaller
 
     installer = PackageManagerInstaller(detect_fn_all)
     assert [] == installer.get_packages_to_install([])
@@ -369,9 +369,9 @@ def test_PackageManagerInstaller_get_packages_to_install():
     
 def test_xylemInstaller_ctor():
     # tripwire/coverage
-    from xylem2 import create_default_installer_context
-    from xylem2.lookup import xylemLookup
-    from xylem2.installers import xylemInstaller
+    from xylem import create_default_installer_context
+    from xylem.lookup import xylemLookup
+    from xylem.installers import xylemInstaller
     lookup = xylemLookup.create_from_rospkg()
     context = create_default_installer_context()
     installer = xylemInstaller(context, lookup)
@@ -379,12 +379,12 @@ def test_xylemInstaller_ctor():
     assert context == installer.installer_context    
 
 def test_xylemInstaller_get_uninstalled():
-    from xylem2 import create_default_installer_context
-    from xylem2.lookup import xylemLookup
-    from xylem2.installers import xylemInstaller
-    from xylem2.platforms.debian import APT_INSTALLER
+    from xylem import create_default_installer_context
+    from xylem.lookup import xylemLookup
+    from xylem.installers import xylemInstaller
+    from xylem.platforms.debian import APT_INSTALLER
     
-    from xylem2.lookup import xylemLookup
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     # create our test fixture.  use most of the default toolchain, but
@@ -444,7 +444,7 @@ def test_xylemInstaller_get_uninstalled():
 
 def get_fake_apt(detect_fn):
     # mainly did this to keep coverage results
-    from xylem2.installers import PackageManagerInstaller
+    from xylem.installers import PackageManagerInstaller
     class FakeAptInstaller(PackageManagerInstaller):
         """ 
         An implementation of the Installer for use on debian style
@@ -458,12 +458,12 @@ def get_fake_apt(detect_fn):
     return FakeAptInstaller()
 
 def test_xylemInstaller_get_uninstalled_unconfigured():
-    from xylem2 import create_default_installer_context, xylemInternalError
-    from xylem2.lookup import xylemLookup, ResolutionError
-    from xylem2.installers import xylemInstaller, PackageManagerInstaller
-    from xylem2.platforms.debian import APT_INSTALLER
+    from xylem import create_default_installer_context, xylemInternalError
+    from xylem.lookup import xylemLookup, ResolutionError
+    from xylem.installers import xylemInstaller, PackageManagerInstaller
+    from xylem.platforms.debian import APT_INSTALLER
     
-    from xylem2.lookup import xylemLookup
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
@@ -531,12 +531,12 @@ def fakeout():
     sys.stderr = realstderr
 
 def test_xylemInstaller_install_resolved():
-    from xylem2 import create_default_installer_context
-    from xylem2.lookup import xylemLookup
-    from xylem2.installers import xylemInstaller
-    from xylem2.platforms.debian import APT_INSTALLER
+    from xylem import create_default_installer_context
+    from xylem.lookup import xylemLookup
+    from xylem.installers import xylemInstaller
+    from xylem.platforms.debian import APT_INSTALLER
     
-    from xylem2.lookup import xylemLookup
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     # create our test fixture.  use most of the default toolchain, but

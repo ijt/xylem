@@ -36,7 +36,7 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'redhat'))
 
 def test_rpm_detect():
-    from xylem2.platforms.redhat import rpm_detect
+    from xylem.platforms.redhat import rpm_detect
 
     m = Mock()
     m.return_value = ''
@@ -48,7 +48,7 @@ def test_rpm_detect():
     assert val == [], val
 
 def test_YumInstaller():
-    from xylem2.platforms.redhat import YumInstaller
+    from xylem.platforms.redhat import YumInstaller
 
     @patch.object(YumInstaller, 'get_packages_to_install')
     def test(mock_method):

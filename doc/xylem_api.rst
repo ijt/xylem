@@ -1,11 +1,11 @@
 .. _python_api:
 
-xylem2 Python API
+xylem Python API
 ==================
 
-.. module:: xylem2
+.. module:: xylem
 
-**Experimental**: the xylem2 Python library is still unstable.
+**Experimental**: the xylem Python library is still unstable.
 
 The :mod:`xylem` Python module supports both the `xylem`
 command-line tool as well as libraries that wish to use xylem data

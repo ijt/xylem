@@ -4,7 +4,7 @@ Overview
 Installing xylem
 -----------------
 
-xylem2 is available using pip or easy_install::
+xylem is available using pip or easy_install::
 
     sudo pip install -U xylem
 

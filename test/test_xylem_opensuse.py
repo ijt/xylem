@@ -36,7 +36,7 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'opensuse'))
 
 def test_ZypperInstaller():
-    from xylem2.platforms.opensuse import ZypperInstaller
+    from xylem.platforms.opensuse import ZypperInstaller
 
     @patch.object(ZypperInstaller, 'get_packages_to_install')
     def test(mock_method):

@@ -35,7 +35,7 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'pip'))
 
 def test_pip_detect():
-    from xylem2.platforms.pip import pip_detect
+    from xylem.platforms.pip import pip_detect
     
     m = Mock()
 
@@ -59,15 +59,15 @@ def test_pip_detect():
 
 def test_PipInstaller_get_depends():
     # make sure PipInstaller supports depends
-    from xylem2.platforms.pip import PipInstaller
+    from xylem.platforms.pip import PipInstaller
     installer = PipInstaller()
     assert ['foo'] == installer.get_depends(dict(depends=['foo']))
     
 def test_PipInstaller():
-    from xylem2 import InstallFailed
-    from xylem2.platforms.pip import PipInstaller
+    from xylem import InstallFailed
+    from xylem.platforms.pip import PipInstaller
 
-    @patch('xylem2.platforms.pip.is_pip_installed')
+    @patch('xylem.platforms.pip.is_pip_installed')
     def test_no_pip(mock_method):
         mock_method.return_value = False
         try:
@@ -78,7 +78,7 @@ def test_PipInstaller():
     
     test_no_pip()
     
-    @patch('xylem2.platforms.pip.is_pip_installed')
+    @patch('xylem.platforms.pip.is_pip_installed')
     @patch.object(PipInstaller, 'get_packages_to_install')
     def test(mock_method, mock_is_pip_installed):
         mock_is_pip_installed.return_value = True

@@ -37,7 +37,7 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'gem'))
 
 def test_gem_detect():
-    from xylem2.platforms.gem import gem_detect
+    from xylem.platforms.gem import gem_detect
     
     m = Mock()
 
@@ -61,15 +61,15 @@ def test_gem_detect():
 
 def test_GemInstaller_get_depends():
     # make sure GemInstaller supports depends
-    from xylem2.platforms.gem import GemInstaller
+    from xylem.platforms.gem import GemInstaller
     installer = GemInstaller()
     assert ['foo'] == installer.get_depends(dict(depends=['foo']))
     
 def test_GemInstaller():
-    from xylem2 import InstallFailed
-    from xylem2.platforms.gem import GemInstaller
+    from xylem import InstallFailed
+    from xylem.platforms.gem import GemInstaller
 
-    @patch('xylem2.platforms.gem.is_gem_installed')
+    @patch('xylem.platforms.gem.is_gem_installed')
     def test_no_gem(mock_method):
         mock_method.return_value = False
         try:
@@ -80,7 +80,7 @@ def test_GemInstaller():
     
     test_no_gem()
     
-    @patch('xylem2.platforms.gem.is_gem_installed')
+    @patch('xylem.platforms.gem.is_gem_installed')
     @patch.object(GemInstaller, 'get_packages_to_install')
     def test(mock_method, mock_is_gem_installed):
         mock_is_gem_installed.return_value = True

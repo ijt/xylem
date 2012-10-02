@@ -36,8 +36,8 @@ import os
 import sys
 from optparse import OptionParser
 
-from xylem2 import InstallFailed
-from xylem2.platforms import source
+from xylem import InstallFailed
+from xylem.platforms import source
 
 NAME='xylem-source'
 def install_main():

@@ -28,7 +28,7 @@
 import os
 
 def test_xylemInternalError():
-    from xylem2.core import xylemInternalError
+    from xylem.core import xylemInternalError
     try:
         raise Exception('foo')
     except Exception as e:
@@ -37,13 +37,13 @@ def test_xylemInternalError():
     
 def test_rd_debug():
     # just tripwire/coverage
-    from xylem2.core import rd_debug
+    from xylem.core import rd_debug
     rd_debug('foo')
     os.environ['xylem_DEBUG'] = '1'
     rd_debug('foo')    
 
 def test_InvalidData():
-    from xylem2.core import InvalidData
+    from xylem.core import InvalidData
     try:
         raise InvalidData('hi')
     except InvalidData as ex:

@@ -29,7 +29,7 @@ from mock import Mock
 
 def test_xylemLoader():
     #tripwire tests
-    from xylem2.loader import xylemLoader
+    from xylem.loader import xylemLoader
     loader = xylemLoader()
     try:
         loader.load_view('foo', Mock())

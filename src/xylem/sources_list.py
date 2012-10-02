@@ -453,7 +453,7 @@ class SourcesListLoader(xylemLoader):
 
     This loader should not be used directly; instead, it is more
     useful composed with other higher-level implementations, like the
-    :class:`xylem2.rospkg_loader.RospkgLoader`.  The general intent
+    :class:`xylem.rospkg_loader.RospkgLoader`.  The general intent
     is to compose it with another loader by making all of the other
     loader's views depends on all the views in this loader.
     """

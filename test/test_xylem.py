@@ -31,13 +31,13 @@ import os
 import sys
 
 def test_create_default_installer_context():
-    import xylem2
-    from xylem2.installers import TYPE_CODENAME
+    import xylem
+    from xylem.installers import TYPE_CODENAME
 
     # test both constructors
-    for context in [xylem2.create_default_installer_context(), xylem2.create_default_installer_context(verbose=True)]:
+    for context in [xylem.create_default_installer_context(), xylem.create_default_installer_context(verbose=True)]:
         assert context is not None
-        assert isinstance(context, xylem2.InstallerContext)
+        assert isinstance(context, xylem.InstallerContext)
 
         #this is just tripwire as we actual value will change over time
         from rospkg.os_detect import OS_UBUNTU

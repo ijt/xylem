@@ -36,16 +36,16 @@ def get_test_dir():
 
 def is_port_installed_tripwire():
     # don't know the correct answer, but make sure this does not throw
-    from xylem2.platforms.osx import is_port_installed
+    from xylem.platforms.osx import is_port_installed
     assert is_port_installed() in [True, False]
 
 def is_brew_installed_tripwire():
     # don't know the correct answer, but make sure this does not throw
-    from xylem2.platforms.osx import is_brew_installed
+    from xylem.platforms.osx import is_brew_installed
     assert is_brew_installed() in [True, False]
     
 def test_brew_detect():
-    from xylem2.platforms.osx import brew_detect
+    from xylem.platforms.osx import brew_detect
     
     m = Mock()
     m.return_value = ''
@@ -67,9 +67,9 @@ def test_brew_detect():
     assert len(val) == len(set(val))
 
 def test_HomebrewInstaller():
-    from xylem2.platforms.osx import HomebrewInstaller
+    from xylem.platforms.osx import HomebrewInstaller
 
-    @patch('xylem2.platforms.osx.is_brew_installed')
+    @patch('xylem.platforms.osx.is_brew_installed')
     @patch.object(HomebrewInstaller, 'get_packages_to_install')
     def test(mock_method, mock_brew_installed):
         mock_brew_installed.return_value = True

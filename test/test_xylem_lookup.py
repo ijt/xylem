@@ -47,7 +47,7 @@ def get_cache_dir():
     return p
 
 def create_test_SourcesListLoader():
-    from xylem2.sources_list import SourcesListLoader
+    from xylem.sources_list import SourcesListLoader
     return SourcesListLoader.create_default(sources_cache_dir=get_cache_dir(), verbose=True)
     
 def get_cache_raw():
@@ -86,7 +86,7 @@ FAKE_TINYXML_RULE = """testtinyxml:
       packages: tinyxml-devel"""
 
 def test_xylemDefinition():
-    from xylem2.lookup import xylemDefinition, ResolutionError, InvalidData
+    from xylem.lookup import xylemDefinition, ResolutionError, InvalidData
     d = dict(a=1, b=2, c=3)
     def1 = xylemDefinition('d', d)
     assert def1.xylem_key == 'd'
@@ -154,8 +154,8 @@ def test_xylemDefinition():
         
 
 def test_xylemView_merge():
-    from xylem2.model import xylemDatabaseEntry
-    from xylem2.lookup import xylemView
+    from xylem.model import xylemDatabaseEntry
+    from xylem.lookup import xylemView
     
     # xylem data must be dictionary of dictionaries
     data = dict(a=dict(x=1), b=dict(y=2), c=dict(z=3))
@@ -218,8 +218,8 @@ def test_xylemView_merge():
     str(view)
 
 def test_xylemLookup_get_xylems():
-    from xylem2.loader import xylemLoader
-    from xylem2.lookup import xylemLookup
+    from xylem.loader import xylemLoader
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
@@ -245,7 +245,7 @@ def test_xylemLookup_get_xylems():
     assert set(lookup.get_xylems('stack1_p2', implicit=True)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p1_dep1', 'stack1_p1_dep2', 'stack1_p2_dep1']), set(lookup.get_xylems('stack1_p2'))    
     
 def test_xylemLookup_get_resources_that_need():
-    from xylem2.lookup import xylemLookup
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
@@ -258,7 +258,7 @@ def test_xylemLookup_get_resources_that_need():
     assert lookup.get_resources_that_need('stack1_p1_dep1') ==  ['stack1_p1']
     
 def test_xylemLookup_create_from_rospkg():
-    from xylem2.lookup import xylemLookup
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
 
     # these are just tripwire, can't actually test as it depends on external env
@@ -272,8 +272,8 @@ def test_xylemLookup_create_from_rospkg():
     assert rosstack == lookup.loader._rosstack
     
 def test_xylemLookup_get_xylem_view_for_resource():
-    from xylem2.lookup import xylemLookup
-    from xylem2.rospkg_loader import DEFAULT_VIEW_KEY, RosPkgLoader
+    from xylem.lookup import xylemLookup
+    from xylem.rospkg_loader import DEFAULT_VIEW_KEY, RosPkgLoader
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
@@ -298,7 +298,7 @@ def test_xylemLookup_get_xylem_view_for_resource():
     assert lookup.get_xylem_view_for_resource('just_a_package').name is DEFAULT_VIEW_KEY
     
 def test_xylemLookup_get_xylem_view():
-    from xylem2.lookup import xylemLookup
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
@@ -336,7 +336,7 @@ def test_xylemLookup_get_xylem_view():
     assert py_cache_raw['testpython'] == python.data
     
 def test_xylemLookup_get_errors():
-    from xylem2.lookup import xylemLookup
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     tree_dir = get_test_tree_dir()
     sources_loader = create_test_SourcesListLoader()
@@ -353,7 +353,7 @@ def test_xylemLookup_get_errors():
     #Now we need a bad sources cache.
     
 def test_xylemLookup_get_views_that_define():
-    from xylem2.lookup import xylemLookup
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     tree_dir = get_test_tree_dir()
     sources_loader = create_test_SourcesListLoader()
@@ -371,8 +371,8 @@ def test_xylemLookup_get_views_that_define():
     assert entry == (PYTHON_URL, PYTHON_URL), entry
     
 def test_xylemLookup_resolve_all_errors():
-    from xylem2.installers import InstallerContext
-    from xylem2.lookup import xylemLookup, ResolutionError
+    from xylem.installers import InstallerContext
+    from xylem.lookup import xylemLookup, ResolutionError
     rospack, rosstack = get_test_rospkgs()
     sources_loader = create_test_SourcesListLoader()
     lookup = xylemLookup.create_from_rospkg(rospack=rospack, rosstack=rosstack,
@@ -388,8 +388,8 @@ def test_xylemLookup_resolve_all_errors():
     assert 'not_a_resource' in errors, errors
 
 def test_xylemLookup_resolve_errors():
-    from xylem2.installers import InstallerContext
-    from xylem2.lookup import xylemLookup, ResolutionError
+    from xylem.installers import InstallerContext
+    from xylem.lookup import xylemLookup, ResolutionError
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
@@ -412,8 +412,8 @@ def test_xylemLookup_resolve_errors():
         assert "Cannot locate xylem definition" in str(e), str(e)
 
 def test_xylemLookup_resolve():
-    from xylem2 import create_default_installer_context
-    from xylem2.lookup import xylemLookup
+    from xylem import create_default_installer_context
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()
@@ -441,8 +441,8 @@ def test_xylemLookup_resolve():
 
 
 def test_xylemLookup_resolve_all():
-    from xylem2 import create_default_installer_context
-    from xylem2.lookup import xylemLookup
+    from xylem import create_default_installer_context
+    from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
     
     sources_loader = create_test_SourcesListLoader()

@@ -1,6 +1,6 @@
-from xylem2.catkin_support import get_installer, get_catkin_view, ValidationFailed, resolve_for_os
+from xylem.catkin_support import get_installer, get_catkin_view, ValidationFailed, resolve_for_os
 
-from xylem2.platforms.debian import APT_INSTALLER
+from xylem.platforms.debian import APT_INSTALLER
 
 
 def test_workflow():

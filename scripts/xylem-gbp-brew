@@ -6,7 +6,7 @@ import optparse
 import os
 import sys
 
-from xylem2.platforms.brewmaker import get_org_name, get_repo_name, compute_tarball_url_for_latest
+from xylem.platforms.brewmaker import get_org_name, get_repo_name, compute_tarball_url_for_latest
 
 PATTERN_GITHUB_WG_DEBS = 'git@github.com:wg-debs/%(repo_name)s.git'
 

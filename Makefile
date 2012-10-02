@@ -47,5 +47,5 @@ testsetup:
 	echo "running xylem tests"
 
 test: testsetup
-	nosetests --with-coverage --cover-package=xylem2 --with-xunit test
+	nosetests --with-coverage --cover-package=xylem --with-xunit test
 

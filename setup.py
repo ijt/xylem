@@ -3,11 +3,11 @@ from distutils.core import setup
 import sys
 sys.path.insert(0, 'src')
 
-from xylem2 import __version__
+from xylem import __version__
 
 setup(name='xylem',
       version= __version__,
-      packages=['xylem2', 'xylem2.platforms'],
+      packages=['xylem', 'xylem.platforms'],
       package_dir = {'':'src'},
 #      data_files=[('man/man1', ['doc/man/xylem.1'])],
       install_requires = ['rospkg', 'PyYAML>=3.1'],

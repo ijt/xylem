@@ -38,14 +38,14 @@ Supporting a new OS/package manager
 Adding new platforms to xylem can be separated into two steps: adding
 support for a new package manager, and adding support for a new OS.
 
-NOTE: There are numerous examples in :mod:`xylem2.platforms` that you
+NOTE: There are numerous examples in :mod:`xylem.platforms` that you
 can follow.
 
 Declaring a new OS
 ''''''''''''''''''
 
 Adding support for a new OS is fairly straightforward: you just
-have to provide xylem2 the keys that are associated with your OS and the 
+have to provide xylem the keys that are associated with your OS and the 
 keys of the installers that your OS supports.
 
 Implementations must provide a ``register_platforms(context)`` call
@@ -125,19 +125,19 @@ Setup
     pip install mock
 
 
-xylem2 uses `Python nose <http://readthedocs.org/docs/nose/en/latest/>`_ 
+xylem uses `Python nose <http://readthedocs.org/docs/nose/en/latest/>`_ 
 for testing, which is a fairly simple and straightfoward test
 framework.  You just have to write a function start with the name
 ``test`` and use normal ``assert`` statements for your tests.
 
-xylem2 also uses `mock <http://www.voidspace.org.uk/python/mock/>`_ to
+xylem also uses `mock <http://www.voidspace.org.uk/python/mock/>`_ to
 create mocks for testing.
 
 You can run the tests, including coverage, as follows:
 
 ::
 
-    cd xylem2/test
+    cd xylem/test
     nosetests 
 
 

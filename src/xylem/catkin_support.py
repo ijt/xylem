@@ -1,6 +1,6 @@
 """
-Helper routines for catkin.  These are distributed inside of xylem2
-to protect catkin against future xylem2 API updatese.  These helper
+Helper routines for catkin.  These are distributed inside of xylem
+to protect catkin against future xylem API updatese.  These helper
 routines are assumed to run in an interactive mode with an end-user
 and thus return end-user oriented error messages.
 
@@ -78,7 +78,7 @@ def resolve_for_os(xylem_key, view, installer, os_name, os_version):
     
     :param os_name: OS name, e.g. 'ubuntu'
 
-    :raises: :exc:`xylem2.ResolutionError`
+    :raises: :exc:`xylem.ResolutionError`
     """
     d = view.lookup(xylem_key)
     inst_key, rule = d.get_rule_for_platform(os_name, os_version, default_installers[os_name], APT_INSTALLER)

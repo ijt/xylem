@@ -31,7 +31,7 @@ import yaml
 import urllib2
 
 import rospkg.distro
-import xylem2.sources_list
+import xylem.sources_list
 
 GITHUB_BASE_URL = 'https://raw.github.com/ros/rosdistro/master/xylem/base.yaml'
 
@@ -39,18 +39,18 @@ def get_test_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'sources.list.d'))
 
 def test_get_sources_list_dir():
-    assert xylem2.sources_list.get_sources_list_dir()
+    assert xylem.sources_list.get_sources_list_dir()
 
 def test_get_sources_cache_dir():
-    assert xylem2.sources_list.get_sources_cache_dir()
+    assert xylem.sources_list.get_sources_cache_dir()
 
 def test_parse_sources_data():
-    from xylem2.sources_list import parse_sources_data
+    from xylem.sources_list import parse_sources_data
     
     parse_sources_data
 
 def test_url_constants():
-    from xylem2.sources_list import DEFAULT_SOURCES_LIST_URL
+    from xylem.sources_list import DEFAULT_SOURCES_LIST_URL
     for url_name, url in [('DEFAULT_SOURCES_LIST_URL', DEFAULT_SOURCES_LIST_URL)]:
         try:
             f = urllib2.urlopen(url)
@@ -60,7 +60,7 @@ def test_url_constants():
             assert False, "URL [%s][%s] failed to download"%(url_name, url)
 
 def test_download_default_sources_list():
-    from xylem2.sources_list import download_default_sources_list
+    from xylem.sources_list import download_default_sources_list
     data = download_default_sources_list()
     assert 'http' in data, data # sanity check, all sources files have urls
     try:
@@ -70,7 +70,7 @@ def test_download_default_sources_list():
         pass
     
 def test_CachedDataSource():
-    from xylem2.sources_list import CachedDataSource, DataSource, TYPE_GBPDISTRO, TYPE_YAML
+    from xylem.sources_list import CachedDataSource, DataSource, TYPE_GBPDISTRO, TYPE_YAML
     type_ = TYPE_GBPDISTRO
     url = 'http://fake.willowgarage.com/foo'
     tags = ['tag1']
@@ -98,9 +98,9 @@ def test_CachedDataSource():
     assert 'key' in repr(cds)    
     
 def test_DataSource():
-    from xylem2.sources_list import DataSource
+    from xylem.sources_list import DataSource
     data_source = DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
-    assert data_source == xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
+    assert data_source == xylem.sources_list.DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
     assert 'yaml' == data_source.type
     assert 'http://fake/url' == data_source.url
     assert ['tag1', 'tag2'] == data_source.tags
@@ -114,29 +114,29 @@ def test_DataSource():
     assert repr(data_source)
 
     try:
-        xylem2.sources_list.DataSource('yaml', 'http://fake/url', 'tag1', origin='foo')
+        xylem.sources_list.DataSource('yaml', 'http://fake/url', 'tag1', origin='foo')
         assert False, "should have raised"
     except ValueError:
         pass
     try:
-        xylem2.sources_list.DataSource('yaml', 'non url', ['tag1'], origin='foo')
+        xylem.sources_list.DataSource('yaml', 'non url', ['tag1'], origin='foo')
         assert False, "should have raised"
     except ValueError:
         pass
     try:
-        xylem2.sources_list.DataSource('bad', 'http://fake/url', ['tag1'], origin='foo')
+        xylem.sources_list.DataSource('bad', 'http://fake/url', ['tag1'], origin='foo')
         assert False, "should have raised"
     except ValueError:
         pass
     try:
-        xylem2.sources_list.DataSource('yaml', 'http://host.no.path/', ['tag1'], origin='foo')
+        xylem.sources_list.DataSource('yaml', 'http://host.no.path/', ['tag1'], origin='foo')
         assert False, "should have raised"
     except ValueError:
         pass
 
 def test_parse_sources_file():
-    from xylem2.sources_list import parse_sources_file
-    from xylem2 import InvalidData
+    from xylem.sources_list import parse_sources_file
+    from xylem import InvalidData
     for f in ['20-default.list', '30-nonexistent.list']:
         path = os.path.join(get_test_dir(), f)
         sources = parse_sources_file(path)
@@ -148,8 +148,8 @@ def test_parse_sources_file():
         pass
     
 def test_parse_sources_list():
-    from xylem2.sources_list import parse_sources_list
-    from xylem2 import InvalidData
+    from xylem.sources_list import parse_sources_list
+    from xylem import InvalidData
     # test with non-existent dir, should return with empty list as
     # directory is not required to exist.
     assert [] == parse_sources_list(sources_list_dir='/not/a/real/path')
@@ -169,7 +169,7 @@ def test_parse_sources_list():
     parse_sources_list()
 
 def test_write_cache_file():
-    from xylem2.sources_list import write_cache_file, compute_filename_hash
+    from xylem.sources_list import write_cache_file, compute_filename_hash
     tempdir = tempfile.mkdtemp()
     
     filepath = write_cache_file(tempdir, 'foo', {'data': 1})
@@ -179,7 +179,7 @@ def test_write_cache_file():
         assert {'data': 1} == yaml.load(f.read())
     
 def test_update_sources_list():
-    from xylem2.sources_list import update_sources_list, InvalidData, compute_filename_hash
+    from xylem.sources_list import update_sources_list, InvalidData, compute_filename_hash
     sources_list_dir=get_test_dir()
     tempdir = tempfile.mkdtemp()
     # use a subdirectory of test dir to make sure xylem creates the necessary substructure
@@ -218,7 +218,7 @@ yaml %s ubuntu"""%(GITHUB_URL, GITHUB_PYTHON_URL, BADHOSTNAME_URL)
     assert expected == index, "\n[%s]\nvs\n[%s]"%(expected, index)
 
 def test_load_cached_sources_list():
-    from xylem2.sources_list import load_cached_sources_list, update_sources_list
+    from xylem.sources_list import load_cached_sources_list, update_sources_list
     tempdir = tempfile.mkdtemp()
 
     # test behavior on empty cache
@@ -246,29 +246,29 @@ def test_load_cached_sources_list():
     assert source2.tags == ['ubuntu']
 
 def test_DataSourceMatcher():
-    empty_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', [])
-    assert empty_data_source == xylem2.sources_list.DataSource('yaml', 'http://fake/url', [])
+    empty_data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', [])
+    assert empty_data_source == xylem.sources_list.DataSource('yaml', 'http://fake/url', [])
 
     # matcher must match 'all' tags
-    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
-    partial_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['tag1'])
+    data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', ['tag1', 'tag2'])
+    partial_data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', ['tag1'])
 
     # same tags as test data source
-    matcher = xylem2.sources_list.DataSourceMatcher(['tag1', 'tag2'])
+    matcher = xylem.sources_list.DataSourceMatcher(['tag1', 'tag2'])
     assert matcher.matches(data_source)
     assert matcher.matches(partial_data_source)
     assert matcher.matches(empty_data_source)
 
     # alter one tag
-    matcher = xylem2.sources_list.DataSourceMatcher(['tag1', 'tag3'])
+    matcher = xylem.sources_list.DataSourceMatcher(['tag1', 'tag3'])
     assert not matcher.matches(data_source)
     assert matcher.matches(empty_data_source)
-    matcher = xylem2.sources_list.DataSourceMatcher(['tag1'])
+    matcher = xylem.sources_list.DataSourceMatcher(['tag1'])
     assert not matcher.matches(data_source)
 
 def test_download_xylem_data():
-    from xylem2.sources_list import download_xylem_data
-    from xylem2 import DownloadFailure
+    from xylem.sources_list import download_xylem_data
+    from xylem import DownloadFailure
     url = GITHUB_BASE_URL
     data = download_xylem_data(url)
     assert 'boost' in data #sanity check
@@ -306,7 +306,7 @@ yaml %s
 yaml %s fuerte ubuntu
 """%(GITHUB_URL, GITHUB_FUERTE_URL)
 def test_parse_sources_data():
-    from xylem2.sources_list import parse_sources_data, TYPE_YAML, InvalidData
+    from xylem.sources_list import parse_sources_data, TYPE_YAML, InvalidData
     
     retval = parse_sources_data(EXAMPLE_SOURCES_DATA, origin='foo')
     assert len(retval) == 1
@@ -350,34 +350,34 @@ def test_DataSourceMatcher_create_default():
     os_detect = rospkg.os_detect.OsDetect()
     os_name, os_version, os_codename = os_detect.detect_os()
 
-    matcher = xylem2.sources_list.DataSourceMatcher.create_default()
+    matcher = xylem.sources_list.DataSourceMatcher.create_default()
 
     # matches full
-    os_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', [distro_name, os_name, os_codename])
+    os_data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', [distro_name, os_name, os_codename])
     assert matcher.matches(os_data_source)
 
     # matches against current os
-    os_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', [os_name, os_codename])
+    os_data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', [os_name, os_codename])
     assert matcher.matches(os_data_source)
     
     # matches against current distro
-    distro_data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', [distro_name])
+    distro_data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', [distro_name])
     assert matcher.matches(distro_data_source)
 
     # test matcher with os override
-    matcher = xylem2.sources_list.DataSourceMatcher.create_default(os_override=('fubuntu', 'flucid'))
+    matcher = xylem.sources_list.DataSourceMatcher.create_default(os_override=('fubuntu', 'flucid'))
     assert not matcher.matches(os_data_source)
-    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['fubuntu'])
+    data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', ['fubuntu'])
     assert matcher.matches(data_source)    
-    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['flucid'])
+    data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', ['flucid'])
     assert matcher.matches(data_source)    
-    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['flucid', 'fubuntu'])
+    data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', ['flucid', 'fubuntu'])
     assert matcher.matches(data_source)    
-    data_source = xylem2.sources_list.DataSource('yaml', 'http://fake/url', ['kubuntu', 'lucid'])
+    data_source = xylem.sources_list.DataSource('yaml', 'http://fake/url', ['kubuntu', 'lucid'])
     assert not matcher.matches(data_source)    
     
 def test_SourcesListLoader_create_default():
-    from xylem2.sources_list import update_sources_list, SourcesListLoader, DataSourceMatcher
+    from xylem.sources_list import update_sources_list, SourcesListLoader, DataSourceMatcher
     # create temp dir for holding sources cache
     tempdir = tempfile.mkdtemp()
 
@@ -388,7 +388,7 @@ def test_SourcesListLoader_create_default():
     assert retval
     
     # now test with cached data
-    matcher = xylem2.sources_list.DataSourceMatcher(['ubuntu', 'lucid'])
+    matcher = xylem.sources_list.DataSourceMatcher(['ubuntu', 'lucid'])
     loader = SourcesListLoader.create_default(matcher, sources_cache_dir=tempdir)
     assert loader.sources
     sources0 = loader.sources
@@ -398,7 +398,7 @@ def test_SourcesListLoader_create_default():
     assert sources0 == loader.sources
     
     # now test with different matcher
-    matcher2 = xylem2.sources_list.DataSourceMatcher(['python'])
+    matcher2 = xylem.sources_list.DataSourceMatcher(['python'])
     loader2 = SourcesListLoader.create_default(matcher2, sources_cache_dir=tempdir)
     assert loader2.sources
     # - should have filtered down to python-only
@@ -434,7 +434,7 @@ def test_SourcesListLoader_create_default():
     assert [] == loader.get_view_dependencies(GITHUB_URL)    
 
     # load_view
-    from xylem2.model import xylemDatabase
+    from xylem.model import xylemDatabase
     for verbose in [True, False]:
         xylem_db = xylemDatabase()
         loader.load_view(GITHUB_URL, xylem_db, verbose=verbose)
