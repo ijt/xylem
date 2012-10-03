@@ -50,7 +50,8 @@ from .loader import xylemLoader
 
 # default file to download with 'init' command in order to bootstrap
 # xylem
-DEFAULT_SOURCES_LIST_URL = 'https://raw.github.com/ros/rosdistro/master/xylem/sources.list.d/20-default.list'
+# TODO: See if this should be changed to something xylem-specific.
+DEFAULT_SOURCES_LIST_URL = 'https://raw.github.com/ros/rosdistro/master/rosdep/sources.list.d/20-default.list'
 
 #seconds to wait before aborting download of xylem data
 DOWNLOAD_TIMEOUT = 15.0 
