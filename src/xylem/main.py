@@ -523,6 +523,11 @@ def command_where_defined(args, options):
         print("ERROR: cannot find definition(s) for [%s]"%(', '.join(args)), file=sys.stderr)
         return 1
 
+def command_remove(args, options):
+    for pkg_name in args:
+        # FIXME: Make this work on brew, etc.
+        os.system('apt-get remove %s' % pkg_name)
+
 def command_resolve(args, options):
     lookup = _get_default_xylemLookup(options)
     installer_context = create_default_installer_context(verbose=options.verbose)
@@ -565,6 +570,7 @@ command_handlers = {
     'install': command_install,
     'what-needs': command_what_needs,
     'where-defined': command_where_defined,
+    'remove': command_remove,
     'resolve': command_resolve,
     'init': command_init,
     'update': command_update,
