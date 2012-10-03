@@ -217,7 +217,7 @@ def test_xylemView_merge():
     # - tripwire
     str(view)
 
-def test_xylemLookup_get_xylems():
+def test_xylemLookup_get_packages():
     from xylem.loader import xylemLoader
     from xylem.lookup import xylemLookup
     rospack, rosstack = get_test_rospkgs()
@@ -227,22 +227,22 @@ def test_xylemLookup_get_xylems():
                                              sources_loader=sources_loader)
     assert lookup.get_loader() is not None
     assert isinstance(lookup.get_loader(), xylemLoader)
-    print(lookup.get_xylems('empty_package'))
-    assert lookup.get_xylems('empty_package') == []
+    print(lookup.get_packages('empty_package'))
+    assert lookup.get_packages('empty_package') == []
 
     try:
-        assert lookup.get_xylems('not a resource') == []
+        assert lookup.get_packages('not a resource') == []
         assert False, "should have raised"
     except ResourceNotFound:
         pass
     
-    print(lookup.get_xylems('stack1_p1'))
-    assert set(lookup.get_xylems('stack1_p1')) == set(['stack1_dep1', 'stack1_p1_dep1', 'stack1_p1_dep2'])
-    assert set(lookup.get_xylems('stack1_p1', implicit=False)) == set(['stack1_dep1', 'stack1_p1_dep1', 'stack1_p1_dep2'])
+    print(lookup.get_packages('stack1_p1'))
+    assert set(lookup.get_packages('stack1_p1')) == set(['stack1_dep1', 'stack1_p1_dep1', 'stack1_p1_dep2'])
+    assert set(lookup.get_packages('stack1_p1', implicit=False)) == set(['stack1_dep1', 'stack1_p1_dep1', 'stack1_p1_dep2'])
     
-    print(lookup.get_xylems('stack1_p2'))
-    assert set(lookup.get_xylems('stack1_p2', implicit=False)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p2_dep1']), set(lookup.get_xylems('stack1_p2'))
-    assert set(lookup.get_xylems('stack1_p2', implicit=True)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p1_dep1', 'stack1_p1_dep2', 'stack1_p2_dep1']), set(lookup.get_xylems('stack1_p2'))    
+    print(lookup.get_packages('stack1_p2'))
+    assert set(lookup.get_packages('stack1_p2', implicit=False)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p2_dep1']), set(lookup.get_packages('stack1_p2'))
+    assert set(lookup.get_packages('stack1_p2', implicit=True)) == set(['stack1_dep1', 'stack1_dep2', 'stack1_p1_dep1', 'stack1_p1_dep2', 'stack1_p2_dep1']), set(lookup.get_packages('stack1_p2'))    
     
 def test_xylemLookup_get_resources_that_need():
     from xylem.lookup import xylemLookup

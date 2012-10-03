@@ -81,7 +81,7 @@ class xylemLoader:
     def get_loadable_views(self):
         raise NotImplementedError()
 
-    def get_xylems(self, resource_name, implicit=True):
+    def get_packages(self, resource_name, implicit=True):
         """
         :raises: :exc:`rospkg.ResourceNotFound` if *resource_name* cannot be found.
         """

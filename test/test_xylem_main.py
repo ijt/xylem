@@ -142,12 +142,12 @@ class TestxylemMain(unittest.TestCase):
             with fakeout() as b:
                 xylem_main(['install', 'python_dep']+cmd_extras)
                 stdout, stderr = b
-                assert "All required xylems installed" in stdout.getvalue(), stdout.getvalue()
+                assert "All required packages installed" in stdout.getvalue(), stdout.getvalue()
                 assert not stderr.getvalue(), stderr.getvalue()
             with fakeout() as b:
                 xylem_main(['install', 'python_dep', '-r']+cmd_extras)
                 stdout, stderr = b
-                assert "All required xylems installed" in stdout.getvalue(), stdout.getvalue()
+                assert "All required packages installed" in stdout.getvalue(), stdout.getvalue()
                 assert not stderr.getvalue(), stderr.getvalue()
         except SystemExit:
             assert False, "system exit occurred: "+b[1].getvalue()

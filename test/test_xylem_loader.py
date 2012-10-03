@@ -48,6 +48,6 @@ def test_xylemLoader():
         assert False, "should have raised NotImplementedError"
     except NotImplementedError: pass
     try:
-        loader.get_xylems('foo', implicit=False)
+        loader.get_packages('foo', implicit=False)
         assert False, "should have raised NotImplementedError"
     except NotImplementedError: pass

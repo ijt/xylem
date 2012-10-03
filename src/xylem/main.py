@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # Copyright (c) 2009, Willow Garage, Inc.
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above copyright
@@ -13,7 +13,7 @@
 #     * Neither the name of the Willow Garage, Inc. nor the names of its
 #       contributors may be used to endorse or promote products derived from
 #       this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -50,9 +50,9 @@ from .installers import xylemInstaller
 from .lookup import xylemLookup, ResolutionError
 from .rospkg_loader import DEFAULT_VIEW_KEY
 from .sources_list import update_sources_list, get_sources_cache_dir,\
-     download_default_sources_list, SourcesListLoader,CACHE_INDEX,\
-     get_sources_list_dir, get_default_sources_list_file,\
-     DEFAULT_SOURCES_LIST_URL
+    download_default_sources_list, SourcesListLoader,CACHE_INDEX,\
+    get_sources_list_dir, get_default_sources_list_file,\
+    DEFAULT_SOURCES_LIST_URL
 
 class UsageError(Exception):
     pass
@@ -61,11 +61,11 @@ _usage = """usage: xylem [options] <command> <args>
 
 Commands:
 
-xylem check <stacks-and-packages>...
-  check if the dependencies of package(s) have been met.
+xylem check <package>...
+  check if the package is installed.
 
-xylem install <stacks-and-packages>...
-  generate a bash script and then execute it.
+xylem install <packages>...
+  install some packages.
 
 xylem db
   generate the dependency database and print it to the console.
@@ -73,22 +73,24 @@ xylem db
 xylem init
   initialize xylem sources in /etc/ros/xylem.  May require sudo.
   
-xylem keys <stacks-and-packages>...
+xylem keys <packages>...
   list the xylem keys that the packages depend on.
 
-xylem resolve <xylems>
-  resolve <xylems> to system dependencies
+xylem remove <packages>
+
+xylem resolve <packages>
+  resolve <packages> to system dependencies
   
 xylem update
   update the local xylem database based on the xylem sources.
   
-xylem what-needs <xylems>...
+xylem what-needs <packages>...
   print a list of packages that declare a xylem on (at least
-  one of) <xylems>
+  one of) <packages>
 
-xylem where-defined <xylems>...
+xylem where-defined <packages>...
   print a list of yaml files that declare a xylem on (at least
-  one of) <xylems>
+  one of) <packages>
 """
 
 def _get_default_xylemLookup(options):
@@ -356,7 +358,7 @@ def command_keys(lookup, packages, options):
     lookup = _get_default_xylemLookup(options)
     xylem_keys = []
     for package_name in packages:
-        xylem_keys.extend(lookup.get_xylems(package_name, implicit=options.recursive))
+        xylem_keys.extend(lookup.get_packages(package_name, implicit=options.recursive))
 
     _print_lookup_errors(lookup)
     print('\n'.join(set(xylem_keys)))
@@ -431,12 +433,12 @@ def command_install(lookup, packages, options):
     try:
         installer.install(uninstalled, **install_options)
         if not options.simulate:
-            print("#All required xylems installed successfully")
+            print("#All required packages installed successfully")
         return 0
     except KeyError as e:
         raise xylemInternalError(e)
     except InstallFailed as e:
-        print("ERROR: the following xylems failed to install", file=sys.stderr)
+        print("ERROR: the following packages failed to install", file=sys.stderr)
         print('\n'.join(["  %s: %s"%(k, m) for k,m in e.failures]), file=sys.stderr)
         return 1
 

@@ -428,7 +428,7 @@ class xylemInstaller(object):
     def install(self, uninstalled, interactive=True, simulate=False,
                 continue_on_error=False, reinstall=False, verbose=False):
         """
-        Install the uninstalled xylems.  This API is for the bulk
+        Install the uninstalled packages.  This API is for the bulk
         workflow of xylem (see example below).  For a more targeted
         install API, see :meth:`xylemInstaller.install_resolved`.
 
@@ -446,7 +446,7 @@ class xylemInstaller(object):
         :param reinstall: If ``True``, install dependencies if even
           already installed (default ``False``).
 
-        :raises: :exc:`InstallFailed` if any xylems fail to install
+        :raises: :exc:`InstallFailed` if any packages fail to install
           and *continue_on_error* is ``False``.
         :raises: :exc:`KeyError` If *uninstalled* value has invalid
           installer keys

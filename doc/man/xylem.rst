@@ -45,23 +45,23 @@ Commands
 
   List the xylem keys that the ROS packages depend on.
 
-**resolve <xylems>...**
+**resolve <packages>...**
 
-  Resolve <xylems> to system dependencies
+  Resolve <packages> to system dependencies
 
 **update**
 
   Update the local xylem database based on the xylem sources.
 
-**what-needs <xylems>...**
+**what-needs <packages>...**
 
   Print a list of packages that declare a xylem on (at least
-  one of) <xylems>
+  one of) <packages>
 
-**where-defined <xylems>...**
+**where-defined <packages>...**
 
   Print a list of YAML files that declare a xylem on (at least
-  one of) <xylems>
+  one of) <packages>
 
 Options
 -------

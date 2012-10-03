@@ -156,7 +156,7 @@ class SourceInstall(object):
         try:
             r.tarball = manifest["uri"]
         except KeyError:
-            raise InvalidRdmanifest("uri required for source xylems") 
+            raise InvalidRdmanifest("uri required for source packages") 
         r.alternate_tarball = manifest.get("alternate-uri")
         r.tarball_md5sum = manifest.get("md5sum")
         return r
@@ -185,7 +185,7 @@ class SourceInstaller(PackageManagerInstaller):
         try:
             url = xylem_args["uri"]
         except KeyError:
-            raise InvalidData("'uri' key required for source xylems") 
+            raise InvalidData("'uri' key required for source packages") 
         alt_url = xylem_args.get("alternate-uri", None)
         md5sum = xylem_args.get("md5sum", None)
 
@@ -266,7 +266,7 @@ def install_source(resolved):
 
     try:
         # This is a bit hacky.  Basically, don't unpack dmg files as
-        # we are currently using source xylems for Nvidia Cg.
+        # we are currently using source packages for Nvidia Cg.
         if not filename.endswith('.dmg'):
             rd_debug("Extracting tarball")
             tarf = tarfile.open(filename)

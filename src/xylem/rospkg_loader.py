@@ -121,16 +121,16 @@ class RosPkgLoader(xylemLoader):
             self._loadable_resource_cache = loadable_list[:]
         return self._loadable_resource_cache
 
-    def get_xylems(self, resource_name, implicit=True):
+    def get_packages(self, resource_name, implicit=True):
         """
         If *resource_name* is a stack, returns an empty list.
         
         :raises: :exc:`rospkg.ResourceNotFound` if *resource_name* cannot be found.
         """
         if resource_name in self.get_loadable_resources():
-            return self._rospack.get_xylems(resource_name, implicit=implicit)
+            return self._rospack.get_packages(resource_name, implicit=implicit)
         elif resource_name in self._rosstack.list():
-            # stacks currently do not have xylems of their own, implicit or otherwise
+            # stacks currently do not have packages of their own, implicit or otherwise
             return []
         else:
             raise rospkg.ResourceNotFound(resource_name)

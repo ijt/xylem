@@ -37,7 +37,7 @@ You can update your xylem database by running::
     xylem update
 
 
-Installating xylems
+Installating packages
 --------------------
 
 xylem takes in the name of a ROS stack or package that you wish to

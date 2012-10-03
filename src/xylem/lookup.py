@@ -238,16 +238,16 @@ class xylemLookup(object):
         """
         return self.errors[:]
     
-    def get_xylems(self, resource_name, implicit=True):
+    def get_packages(self, resource_name, implicit=True):
         """
-        Get xylems that *resource_name* (e.g. package) requires.
+        Get packages that *resource_name* (e.g. package) requires.
 
         :param implicit: If ``True``, include implicit xylem
           dependencies. Default: ``True``.
 
         :returns: list of xylem names, ``[str]``
         """
-        return self.loader.get_xylems(resource_name, implicit=implicit)
+        return self.loader.get_packages(resource_name, implicit=implicit)
 
     def get_resources_that_need(self, xylem_name):
         """
@@ -255,7 +255,7 @@ class xylemLookup(object):
         
         :returns: list of package names that require xylem, ``[str]``
         """
-        return [k for k in self.loader.get_loadable_resources() if xylem_name in self.get_xylems(k, implicit=False)]
+        return [k for k in self.loader.get_loadable_resources() if xylem_name in self.get_packages(k, implicit=False)]
 
     @staticmethod
     def create_from_rospkg(rospack=None, rosstack=None, 
@@ -325,7 +325,7 @@ class xylemLookup(object):
         # TODO: resolutions dictionary should be replaced with resolution model instead of mapping (undefined) keys.
         for resource_name in resources:
             try:
-                xylem_keys = self.get_xylems(resource_name, implicit=implicit)
+                xylem_keys = self.get_packages(resource_name, implicit=implicit)
                 if self.verbose:
                     print("resolve_all: resource [%s] requires xylem keys [%s]"%(resource_name, ', '.join(xylem_keys)), file=sys.stderr)
                 for xylem_key in xylem_keys:
@@ -396,7 +396,7 @@ class xylemLookup(object):
             raise ResolutionError(xylem_key, None, os_name, os_version, "Cannot locate xylem definition for [%s]"%(xylem_key))
 
         # check cache: the main motivation for the cache is that
-        # source xylems are expensive to resolve
+        # source packages are expensive to resolve
         if xylem_key in self._resolve_cache:
             cache_value = self._resolve_cache[xylem_key]
             cache_os_name = cache_value[0]

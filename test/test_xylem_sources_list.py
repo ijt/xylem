@@ -409,7 +409,7 @@ def test_SourcesListLoader_create_default():
 
     # very simple, always raises RNF
     try:
-        loader.get_xylems('foo')
+        loader.get_packages('foo')
     except rospkg.ResourceNotFound: pass
     try:
         loader.get_view_key('foo')

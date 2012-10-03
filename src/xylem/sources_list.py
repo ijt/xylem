@@ -529,9 +529,9 @@ class SourcesListLoader(xylemLoader):
         else:
             raise rospkg.ResourceNotFound(view_name)
 
-    def get_xylems(self, resource_name, implicit=True):
+    def get_packages(self, resource_name, implicit=True):
         """
-        Always raises as SourceListLoader defines no concrete resources with xylems.
+        Always raises as SourceListLoader defines no concrete resources with packages.
         
         :raises: :exc:`rospkg.ResourceNotFound`
         """
@@ -539,7 +539,7 @@ class SourcesListLoader(xylemLoader):
     
     def get_view_key(self, resource_name):
         """
-        Always raises as SourceListLoader defines no concrete resources with xylems.
+        Always raises as SourceListLoader defines no concrete resources with packages.
 
         :returns: Name of view that *resource_name* is in, ``None`` if no associated view.
         :raises: :exc:`rospkg.ResourceNotFound` if *resource_name* cannot be found.
