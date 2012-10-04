@@ -345,19 +345,17 @@ def command_update(options):
     except IOError as e:
         print("ERROR: error loading sources list:\n\t%s"%(e), file=sys.stderr)
     
-def command_check(packages, options):
+def command_check(args, options):
     try:
-        resolved_pairs, invalid_key_errors, _ = resolve(packages, options)
-        for _, resolved_pkgs in resolved_pairs:
-            for p in resolved_pkgs:
-                # FIXME: Make this run on all platforms.
-                # Shelling out to dpkg only works on debian/ubuntu.
-                with open(os.devnull, 'w') as devnull:
-                    ret_code = subprocess.call(['dpkg', '-S', p],
-                        stdout=devnull, stderr=devnull)
-                    if ret_code != 0:
-                        print("%s does not appear to be installed." % p)
-                        return ret_code
+        installer, _, _, _, _ = get_default_installer()
+        for xylem_pkg in args:
+            resolved_pairs, _, _ = resolve([xylem_pkg], options)
+            sys_pkgs = [p for _, pkgs in resolved_pairs for p in pkgs]
+            for p in sys_pkgs:
+                if not installer.detect_fn(sys_pkgs):
+                    print("%s does not appear to be installed." % xylem_pkg)
+                    return 1
+
         print("All given packages appear to be installed.")
         return 0
     except exceptions.OSError:

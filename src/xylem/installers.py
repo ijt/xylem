@@ -324,6 +324,8 @@ class PackageManagerInstaller(Installer):
 
     def __init__(self, detect_fn, supports_depends=False):
         """
+        :param detect_fn: function that checks whether every member of
+                          a list of sytem packages is installed
         :param supports_depends: package manager supports dependency key
         """
         self.detect_fn = detect_fn
