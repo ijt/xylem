@@ -92,35 +92,11 @@ def create_default_installer_context(verbose=False):
 
     return context
 
-#TODO: this was partially abstracted from main() for another library,
-# but it turned out to be unnecessary. Not sure it's worth maintaining
-# separately, especially in the top-level module.
-def get_default_installer(installer_context=None, verbose=False):
-    """
-    Based on the active OS and installer context configuration, get
-    the installer to use and the necessary configuration state
-    (installer keys, OS name/version).
-    
-    :returns: installer, installer_keys, default_key, os_name, os_version. 
-    """
-    if installer_context is None:
-        installer_context = create_default_installer_context(verbose=verbose)
-
-    os_name, os_version = installer_context.get_os_name_and_version()
-    try:
-        installer_keys = installer_context.get_os_installer_keys(os_name)
-        default_key = installer_context.get_default_os_installer_key(os_name)
-    except KeyError:
-        raise UnsupportedOs(os_name, installer_context.get_os_keys())
-    installer = installer_context.get_installer(default_key)
-    return installer, installer_keys, default_key, os_name, os_version
-
 __all__ = ['InstallerContext', 'Installer', 'PackageManagerInstaller',
         'xylemInternalError', 'InstallFailed', 'UnsupportedOs', 'InvalidData',
         'DownloadFailure',
         'xylemDatabase', 'xylemDatabaseEntry',
         'xylemDefinition', 'xylemView', 'xylemLookup', 'ResolutionError',
         'xylemLoader', 'RosPkgLoader',
-        'get_default_installer', 
         'create_default_installer_context',
         ]

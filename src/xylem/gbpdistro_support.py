@@ -135,8 +135,8 @@ def download_gbpdistro_as_xylem_data(gbpdistro_url, targets_url=None):
         f.close()
         gbpdistro_data = yaml.safe_load(text)
         return gbprepo_to_xylem_data(gbpdistro_data,
-                                      targets_data,
-                                      gbpdistro_url)
+                                     targets_data,
+                                     gbpdistro_url)
     except Exception as e:
         raise DownloadFailure("Failed to download target platform data "
                             + "for gbpdistro:\n\t" + str(e))

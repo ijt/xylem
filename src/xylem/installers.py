@@ -269,6 +269,14 @@ class Installer(object):
         """
         raise NotImplementedError("get_package_install_command", resolved, interactive, reinstall)
 
+    def get_remove_command(self, resolved, interactive=True):
+        commands = self.get_install_command(resolved, reinstall=True,
+            interactive=interactive)
+        # TODO: write individual cases for various package management
+        # tools.
+        return [['remove' if part == 'install' else part for part in cmd]
+                for cmd in commands]
+
     def get_depends(self, xylem_args): 
         """ 
         :returns: list of dependencies on other xylem keys.  Only

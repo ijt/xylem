@@ -36,6 +36,7 @@ from __future__ import print_function
 
 import os
 import sys
+import subprocess
 import traceback
 import urllib2
 
@@ -43,14 +44,14 @@ from optparse import OptionParser
 
 import rospkg
 
-from . import create_default_installer_context, get_default_installer
+from . import create_default_installer_context
 from . import __version__
-from .core import xylemInternalError, InstallFailed, UnsupportedOs, InvalidData
+from .core import xylemInternalError, UnsupportedOs, InvalidData
 from .installers import xylemInstaller
 from .lookup import xylemLookup, ResolutionError
 from .rospkg_loader import DEFAULT_VIEW_KEY
 from .sources_list import update_sources_list, get_sources_cache_dir,\
-    download_default_sources_list, SourcesListLoader,CACHE_INDEX,\
+    download_default_sources_list, SourcesListLoader, CACHE_INDEX,\
     get_sources_list_dir, get_default_sources_list_file,\
     DEFAULT_SOURCES_LIST_URL
 
@@ -400,47 +401,27 @@ def error_to_human_readable(error):
     else:
         return str(error)
     
-def command_install(lookup, packages, options):
-    # map options
-    install_options = dict(interactive=not options.default_yes, verbose=options.verbose,
-                           reinstall=options.reinstall,
-                           continue_on_error=options.robust, simulate=options.simulate)
+def command_install(packages, options):
+    installer, _, _, _, _ = get_default_installer()
+    resolved_pairs, invalid_key_errors, _ = resolve(packages, options)
+    for _, resolved_pkgs in resolved_pairs:
+        commands = installer.get_install_command(resolved_pkgs)
+        for c in commands:
+            subprocess.call(c)
 
-    # setup installer
-    installer_context = create_default_installer_context(verbose=options.verbose)
-    configure_installer_context_os(installer_context, options)
-    installer = xylemInstaller(installer_context, lookup)
+    if invalid_key_errors:
+        return 1 # error exit code
 
-    if options.reinstall:
-        if options.verbose:
-            print("reinstall is true, resolving all dependencies")
-        try:
-            uninstalled, errors = lookup.resolve_all(packages, installer_context, implicit=options.recursive)
-        except InvalidData as e:
-            print("ERROR: unable to process all dependencies:\n\t%s"%(e), file=sys.stderr)
-            return 1
-    else:
-        uninstalled, errors = installer.get_uninstalled(packages, implicit=options.recursive, verbose=options.verbose)
-        
-    if options.verbose:
-        print("uninstalled dependencies are: [%s]"%(', '.join([', '.join(pkg) for pkg in [v for k,v in uninstalled]])))
-        
-    if errors:
-        print("ERROR: the following packages/stacks could not have their xylem keys resolved\nto system dependencies:", file=sys.stderr)
-        for xylem_key, error in errors.iteritems():
-            print("%s: %s"%(xylem_key, error_to_human_readable(error)), file=sys.stderr)
-        return 1
-    try:
-        installer.install(uninstalled, **install_options)
-        if not options.simulate:
-            print("#All required packages installed successfully")
-        return 0
-    except KeyError as e:
-        raise xylemInternalError(e)
-    except InstallFailed as e:
-        print("ERROR: the following packages failed to install", file=sys.stderr)
-        print('\n'.join(["  %s: %s"%(k, m) for k,m in e.failures]), file=sys.stderr)
-        return 1
+def command_remove(packages, options):
+    installer, _, _, _, _ = get_default_installer()
+    resolved_pairs, invalid_key_errors, _ = resolve(packages, options)
+    for _, resolved_pkgs in resolved_pairs:
+        commands = installer.get_remove_command(resolved_pkgs)
+        for c in commands:
+            subprocess.call(c)
+
+    if invalid_key_errors:
+        return 1 # error exit code
 
 def _compute_depdb_output(lookup, packages, options):
     installer_context = create_default_installer_context(verbose=options.verbose)
@@ -523,12 +504,22 @@ def command_where_defined(args, options):
         print("ERROR: cannot find definition(s) for [%s]"%(', '.join(args)), file=sys.stderr)
         return 1
 
-def command_remove(args, options):
-    for pkg_name in args:
-        # FIXME: Make this work on brew, etc.
-        os.system('apt-get remove %s' % pkg_name)
-
 def command_resolve(args, options):
+    resolved_pairs, invalid_key_errors, _ = resolve(args, options)
+
+    for rule_installer, resolved in resolved_pairs:
+        print("#%s"%(rule_installer))
+        print (" ".join([str(r) for r in resolved]))
+
+    if invalid_key_errors:
+        return 1 # error exit code
+
+def resolve(args, options):
+    """
+    Resolve os-specific package names from xylem package names.
+
+    :returns: resolved_dict, invalid_key_errors, lookup_errors
+    """
     lookup = _get_default_xylemLookup(options)
     installer_context = create_default_installer_context(verbose=options.verbose)
     configure_installer_context_os(installer_context, options)
@@ -537,6 +528,7 @@ def command_resolve(args, options):
             os_name, os_version = get_default_installer(installer_context=installer_context,
                                                         verbose=options.verbose)
     invalid_key_errors = []
+    resolved_pairs = []
     for xylem_name in args:
         if len(args) > 1:
             print("#xylem[%s]"%xylem_name)
@@ -545,23 +537,39 @@ def command_resolve(args, options):
         try:
             d = view.lookup(xylem_name)
         except KeyError as e:
+            print("ERROR: no xylem rule for %s"%(error), file=sys.stderr)        
             invalid_key_errors.append(e)
             continue
         rule_installer, rule = d.get_rule_for_platform(os_name, os_version, installer_keys, default_key)
 
         installer = installer_context.get_installer(rule_installer)
         resolved = installer.resolve(rule)
-        print("#%s"%(rule_installer))
-        print (" ".join([str(r) for r in resolved]))
-
-    for error in invalid_key_errors:
-        print("ERROR: no xylem rule for %s"%(error), file=sys.stderr)        
+        resolved_pairs.append((rule_installer, resolved))
 
     for error in lookup.get_errors():
         print("WARNING: %s"%(error_to_human_readable(error)), file=sys.stderr)
 
-    if invalid_key_errors:
-        return 1 # error exit code
+    return resolved_pairs, invalid_key_errors, lookup.get_errors()
+
+def get_default_installer(installer_context=None, verbose=False):
+    """
+    Based on the active OS and installer context configuration, get
+    the installer to use and the necessary configuration state
+    (installer keys, OS name/version).
+    
+    :returns: installer, installer_keys, default_key, os_name, os_version. 
+    """
+    if installer_context is None:
+        installer_context = create_default_installer_context(verbose=verbose)
+
+    os_name, os_version = installer_context.get_os_name_and_version()
+    try:
+        installer_keys = installer_context.get_os_installer_keys(os_name)
+        default_key = installer_context.get_default_os_installer_key(os_name)
+    except KeyError:
+        raise UnsupportedOs(os_name, installer_context.get_os_keys())
+    installer = installer_context.get_installer(default_key)
+    return installer, installer_keys, default_key, os_name, os_version
 
 command_handlers = {
     'db': command_db,
@@ -571,6 +579,7 @@ command_handlers = {
     'what-needs': command_what_needs,
     'where-defined': command_where_defined,
     'remove': command_remove,
+    # TODO: Rename this to "lookup".
     'resolve': command_resolve,
     'init': command_init,
     'update': command_update,
@@ -581,8 +590,12 @@ command_handlers = {
     'depdb': command_db, 
     }
 
-# commands that accept xylem names as args
-_command_xylem_args = ['what-needs', 'what_needs', 'where-defined', 'where_defined', 'resolve']
+# commands that accept args
+_command_xylem_args = [
+    'install', 'remove', 'what-needs', 'what_needs', 'where-defined',
+    'where_defined', 'resolve'
+    ]
+
 # commands that take no args
 _command_no_args = ['update', 'init', 'db']
 
