@@ -48,10 +48,8 @@ import rospkg
 from . import create_default_installer_context
 from . import __version__
 from .core import xylemInternalError, UnsupportedOs, InvalidData
-from .lookup import xylemLookup, ResolutionError
-from .rospkg_loader import DEFAULT_VIEW_KEY
 from .sources_list import update_sources_list, get_sources_cache_dir,\
-    download_default_sources_list, SourcesListLoader, CACHE_INDEX,\
+    download_default_sources_list, CACHE_INDEX,\
     get_sources_list_dir, get_default_sources_list_file,\
     DEFAULT_SOURCES_LIST_URL
 
@@ -84,19 +82,6 @@ xylem update
   update the local xylem database based on the xylem sources.
 """
 
-def _get_default_xylemLookup(options):
-    """
-    Helper routine for converting command-line options into
-    appropriate xylemLookup instance.
-    """
-    os_override = convert_os_override_option(options.os_override)
-    sources_loader = SourcesListLoader.create_default(sources_cache_dir=options.sources_cache_dir,
-                                                      os_override=os_override,
-                                                      verbose=options.verbose)
-    lookup = xylemLookup.create_from_rospkg(sources_loader=sources_loader)
-    lookup.verbose = options.verbose
-    return lookup
-
 def xylem_main(args=None):
     if args is None:
         args = sys.argv[1:]
@@ -122,13 +107,6 @@ Please go to the xylem page [1] and file a bug report with the message below.
 
 %s
 """%(e.message), file=sys.stderr)
-        sys.exit(1)
-    except ResolutionError as e:
-        print("""
-ERROR: %s
-
-%s
-"""%(e.args[0], e), file=sys.stderr)
         sys.exit(1)
     except UnsupportedOs as e:
         print("Unsupported OS: %s\nSupported OSes are [%s]"%(e.args[0], ', '.join(e.args[1])), file=sys.stderr)
@@ -179,13 +157,9 @@ ERROR: your xylem installation has not been initialized yet.  Please run:
     
 def _xylem_main(args):
     # sources cache dir is our local database.  
-    default_sources_cache = get_sources_cache_dir()
-
     parser = OptionParser(usage=_usage, prog='xylem')
-    parser.add_option("--os", dest="os_override", default=None, 
+    parser.add_option("--os", dest="os_override", default=None,
                       metavar="OS_NAME:OS_VERSION", help="Override OS name and version (colon-separated), e.g. ubuntu:lucid")
-    parser.add_option("-c", "--sources-cache-dir", dest="sources_cache_dir", default=default_sources_cache,
-                      metavar='SOURCES_CACHE_DIR', help="Override %s"%(default_sources_cache))
     parser.add_option("--verbose", "-v", dest="verbose", default=False, 
                       action="store_true", help="verbose display")
     parser.add_option("--version", dest="print_version", default=False, 
@@ -196,12 +170,8 @@ def _xylem_main(args):
                       action="store_true", help="Tell the package manager to default to y or fail when installing")
     parser.add_option("--simulate", "-s", dest="simulate", default=False, 
                       action="store_true", help="Simulate install")
-    parser.add_option("-r", dest="robust", default=False, 
-                      action="store_true", help="Continue installing despite errors.")
-    parser.add_option("-a", "--all", dest="xylem_all", default=False, 
-                      action="store_true", help="select all packages")
-    parser.add_option("-n", dest="recursive", default=True, 
-                      action="store_false", help="Do not consider implicit/recursive dependencies.  Only valid with 'keys', 'check', and 'install' commands.")
+    #parser.add_option("-r", dest="robust", default=False, 
+    #                  action="store_true", help="Continue installing despite errors.")
 
     options, args = parser.parse_args(args)
     if options.print_version:
@@ -215,14 +185,10 @@ def _xylem_main(args):
         parser.error("Unsupported command %s."%command)
     args = args[1:]
 
-    if not command in ['init', 'update']:
-        check_for_sources_list_init(options.sources_cache_dir)
     if command in _command_xylem_args:
-        return _xylem_args_handler(command, parser, options, args)
+        return _args_handler(command, parser, options, args)
     elif command in _command_no_args:
         return _no_args_handler(command, parser, options, args)        
-    else:
-        return _package_args_handler(command, parser, options, args)
 
 def _no_args_handler(command, parser, options, args):
     if args:
@@ -230,46 +196,12 @@ def _no_args_handler(command, parser, options, args):
     else:
         return command_handlers[command](options)
     
-def _xylem_args_handler(command, parser, options, args):
-
-    # xylem keys as args
-    if options.xylem_all:
-        parser.error("-a, --all is not a valid option for this command")
-    elif len(args) < 1:
+def _args_handler(command, parser, options, args):
+    # package keys as args
+    if not args:
         parser.error("Please enter arguments for '%s'"%command)
     else:
         return command_handlers[command](args, options)
-    
-def _package_args_handler(command, parser, options, args):
-    # package or stack names as args.  have to convert stack names to packages.
-    # - overrides to enable testing
-    rospack = rospkg.RosPack()
-    rosstack = rospkg.RosStack()
-    lookup = _get_default_xylemLookup(options)
-    loader = lookup.get_loader()
-    
-    if options.xylem_all:
-        if args:
-            parser.error("cannot specify additional arguments with -a")
-        else:
-            # let the loader filter the -a. This will take out some
-            # packages that are catkinized (for now).
-            args = loader.get_loadable_resources()
-    elif not args:
-        parser.error("no packages or stacks specified")
-
-    val = rospkg.expand_to_packages(args, rospack, rosstack)
-    packages = val[0]
-    not_found = val[1]
-    if not_found:
-        raise rospkg.ResourceNotFound(not_found[0], rospack.get_ros_paths())
-
-    if 0 and not packages: # disable, let individual handlers specify behavior
-        # possible with empty stacks
-        print("No packages in arguments, aborting")
-        return
-
-    return command_handlers[command](lookup, packages, options)
 
 def convert_os_override_option(options_os_override):
     """
@@ -348,12 +280,9 @@ def command_check(args, options):
     try:
         installer, _, _, _, _ = get_default_installer()
         for xylem_pkg in args:
-            resolved_pairs, _, _ = resolve([xylem_pkg], options)
-            sys_pkgs = [p for _, pkgs in resolved_pairs for p in pkgs]
-            for p in sys_pkgs:
-                if not installer.detect_fn(sys_pkgs):
-                    print("%s does not appear to be installed." % xylem_pkg)
-                    return 1
+            if not installer.detect_fn(resolve([xylem_pkg], options)):
+                print("%s does not appear to be installed." % xylem_pkg)
+                return 1
 
         print("All given packages appear to be installed.")
         return 0
@@ -363,68 +292,24 @@ def command_check(args, options):
 def error_to_human_readable(error):
     if isinstance(error, rospkg.ResourceNotFound):
         return "Missing resource %s"%(str(error))
-    elif isinstance(error, ResolutionError):
-        return str(error.args[0])
     else:
         return str(error)
     
 def command_install(packages, options):
     installer, _, _, _, _ = get_default_installer()
-    resolved_pairs, invalid_key_errors, _ = resolve(packages, options)
-    for _, resolved_pkgs in resolved_pairs:
-        commands = installer.get_install_command(resolved_pkgs)
+    for p in resolve(packages, options):
+        commands = installer.get_install_command([p])
         for c in commands:
             subprocess.call(c)
-
-    if invalid_key_errors:
-        return 1 # error exit code
+    return 0
 
 def command_remove(packages, options):
     installer, _, _, _, _ = get_default_installer()
-    resolved_pairs, invalid_key_errors, _ = resolve(packages, options)
-    for _, resolved_pkgs in resolved_pairs:
-        commands = installer.get_remove_command(resolved_pkgs)
+    for p in resolve(packages, options):
+        commands = installer.get_remove_command([p])
         for c in commands:
             subprocess.call(c)
-
-    if invalid_key_errors:
-        return 1 # error exit code
-    
-def command_db(options):
-    # exact same setup logic as command_resolve, should possibly combine
-    lookup = _get_default_xylemLookup(options)
-    installer_context = create_default_installer_context(verbose=options.verbose)
-    configure_installer_context_os(installer_context, options)
-    os_name, os_version = installer_context.get_os_name_and_version()
-    try:
-        installer_keys = installer_context.get_os_installer_keys(os_name)
-        default_key = installer_context.get_default_os_installer_key(os_name)
-    except KeyError:
-        raise UnsupportedOs(os_name, installer_context.get_os_keys())
-    installer = installer_context.get_installer(default_key)
-
-    print("OS NAME: %s"%os_name)
-    print("OS VERSION: %s"%os_version)
-    errors = []
-    print("DB [key -> resolution]")
-    # db does not leverage the resource-based API
-    view = lookup.get_xylem_view(DEFAULT_VIEW_KEY, verbose=options.verbose)
-    for xylem_name in view.keys():
-        try:
-            d = view.lookup(xylem_name)
-            _, rule = d.get_rule_for_platform(os_name, os_version, installer_keys, default_key)
-            resolved = installer.resolve(rule)
-            resolved_str = " ".join(resolved)
-            print ("%s -> %s"%(xylem_name, resolved_str))
-        except ResolutionError as e:
-            errors.append(e)
-
-    #TODO: add command-line option for users to be able to see this.
-    #This is useful for platform bringup, but useless for most users
-    #as the xylem db contains numerous, platform-specific keys.
-    if 0: 
-        for error in errors:
-            print("WARNING: %s"%(error_to_human_readable(error)), file=sys.stderr)
+    return 0
 
 def _print_lookup_errors(lookup):
     for error in lookup.get_errors():
@@ -434,52 +319,20 @@ def _print_lookup_errors(lookup):
             print("WARNING: %s"%(str(error)), file=sys.stderr)
 
 def command_resolve(args, options):
-    resolved_pairs, invalid_key_errors, _ = resolve(args, options)
-
-    for rule_installer, resolved in resolved_pairs:
-        print("#%s"%(rule_installer))
-        print (" ".join([str(r) for r in resolved]))
-
-    if invalid_key_errors:
-        return 1 # error exit code
+    print(' '.join(resolve(args, options)))
+    return 0
 
 def resolve(args, options):
     """
     Resolve os-specific package names from xylem package names.
 
-    :returns: resolved_dict, invalid_key_errors, lookup_errors
+    :returns: list of system-specific package names
     """
-    lookup = _get_default_xylemLookup(options)
     installer_context = create_default_installer_context(verbose=options.verbose)
     configure_installer_context_os(installer_context, options)
-
-    installer, installer_keys, default_key, \
-            os_name, os_version = get_default_installer(installer_context=installer_context,
-                                                        verbose=options.verbose)
-    invalid_key_errors = []
-    resolved_pairs = []
-    for xylem_name in args:
-        if len(args) > 1:
-            print("#xylem[%s]"%xylem_name)
-
-        view = lookup.get_xylem_view(DEFAULT_VIEW_KEY, verbose=options.verbose)
-        try:
-            d = view.lookup(xylem_name)
-        except KeyError as e:
-            print("ERROR: no xylem rule for %s" % error_to_human_readable(e),
-                file=sys.stderr)        
-            invalid_key_errors.append(e)
-            continue
-        rule_installer, rule = d.get_rule_for_platform(os_name, os_version, installer_keys, default_key)
-
-        installer = installer_context.get_installer(rule_installer)
-        resolved = installer.resolve(rule)
-        resolved_pairs.append((rule_installer, resolved))
-
-    for error in lookup.get_errors():
-        print("WARNING: %s"%(error_to_human_readable(error)), file=sys.stderr)
-
-    return resolved_pairs, invalid_key_errors, lookup.get_errors()
+    installer, _, _, _, _ = get_default_installer(installer_context=installer_context,
+                                                  verbose=options.verbose)
+    return [syspkg for xpkg in args for syspkg in installer.resolve(xpkg)]
 
 def get_default_installer(installer_context=None, verbose=False):
     """
@@ -502,7 +355,6 @@ def get_default_installer(installer_context=None, verbose=False):
     return installer, installer_keys, default_key, os_name, os_version
 
 command_handlers = {
-    'db': command_db,
     'check': command_check,
     'install': command_install,
     'remove': command_remove,
