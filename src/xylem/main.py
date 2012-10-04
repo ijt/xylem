@@ -34,6 +34,7 @@ Command-line interface to xylem library
 
 from __future__ import print_function
 
+import exceptions
 import os
 import sys
 import subprocess
@@ -47,7 +48,6 @@ import rospkg
 from . import create_default_installer_context
 from . import __version__
 from .core import xylemInternalError, UnsupportedOs, InvalidData
-from .installers import xylemInstaller
 from .lookup import xylemLookup, ResolutionError
 from .rospkg_loader import DEFAULT_VIEW_KEY
 from .sources_list import update_sources_list, get_sources_cache_dir,\
@@ -345,34 +345,23 @@ def command_update(options):
     except IOError as e:
         print("ERROR: error loading sources list:\n\t%s"%(e), file=sys.stderr)
     
-def command_check(lookup, packages, options):
-    verbose = options.verbose
-    
-    installer_context = create_default_installer_context(verbose=verbose)
-    configure_installer_context_os(installer_context, options)
-    installer = xylemInstaller(installer_context, lookup)
-
-    uninstalled, errors = installer.get_uninstalled(packages, implicit=options.recursive, verbose=verbose)
-
-    # pretty print the result
-    if [v for k, v in uninstalled if v]:
-        print("System dependencies have not been satisified:")
-        for installer_key, resolved in uninstalled:
-            if resolved:
-                for r in resolved:
-                    print("%s\t%s"%(installer_key, r))
-    else:
-        print("All system dependencies have been satisified")
-    if errors:
-        for package_name, ex in errors.items():
-            if isinstance(ex, rospkg.ResourceNotFound):
-                print("ERROR[%s]: resource not found [%s]"%(package_name, ex.args[0]), file=sys.stderr)
-            else:
-                print("ERROR[%s]: %s"%(package_name, str(ex)), file=sys.stderr)                
-    if uninstalled:
-        return 1
-    else:
+def command_check(packages, options):
+    try:
+        resolved_pairs, invalid_key_errors, _ = resolve(packages, options)
+        for _, resolved_pkgs in resolved_pairs:
+            for p in resolved_pkgs:
+                # FIXME: Make this run on all platforms.
+                # Shelling out to dpkg only works on debian/ubuntu.
+                with open(os.devnull, 'w') as devnull:
+                    ret_code = subprocess.call(['dpkg', '-S', p],
+                        stdout=devnull, stderr=devnull)
+                    if ret_code != 0:
+                        print("%s does not appear to be installed." % p)
+                        return ret_code
+        print("All given packages appear to be installed.")
         return 0
+    except exceptions.OSError:
+        return 1
 
 def error_to_human_readable(error):
     if isinstance(error, rospkg.ResourceNotFound):
@@ -403,20 +392,6 @@ def command_remove(packages, options):
 
     if invalid_key_errors:
         return 1 # error exit code
-
-def _compute_depdb_output(lookup, packages, options):
-    installer_context = create_default_installer_context(verbose=options.verbose)
-    os_name, os_version = _detect_os(installer_context, options)
-    
-    output = "xylem dependencies for operating system %s version %s "%(os_name, os_version)
-    for stack_name in stacks:
-        output += "\nSTACK: %s\n"%(stack_name)
-        view = lookup.get_stack_xylem_view(stack_name)
-        for xylem in view.keys():
-            definition = view.lookup(xylem)
-            resolved = resolve_definition(definition, os_name, os_version)
-            output = output + "<<<< %s -> %s >>>>\n"%(xylem, resolved)
-    return output
     
 def command_db(options):
     # exact same setup logic as command_resolve, should possibly combine
@@ -494,7 +469,8 @@ def resolve(args, options):
         try:
             d = view.lookup(xylem_name)
         except KeyError as e:
-            print("ERROR: no xylem rule for %s"%(error), file=sys.stderr)        
+            print("ERROR: no xylem rule for %s" % error_to_human_readable(e),
+                file=sys.stderr)        
             invalid_key_errors.append(e)
             continue
         rule_installer, rule = d.get_rule_for_platform(os_name, os_version, installer_keys, default_key)
@@ -540,7 +516,7 @@ command_handlers = {
     }
 
 # commands that accept args
-_command_xylem_args = ['install', 'remove', 'resolve']
+_command_xylem_args = ['check', 'install', 'remove', 'resolve']
 
 # commands that take no args
 _command_no_args = ['update', 'init', 'db']
