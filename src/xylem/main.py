@@ -345,15 +345,6 @@ def command_update(options):
     except IOError as e:
         print("ERROR: error loading sources list:\n\t%s"%(e), file=sys.stderr)
     
-def command_keys(lookup, packages, options):
-    lookup = _get_default_xylemLookup(options)
-    xylem_keys = []
-    for package_name in packages:
-        xylem_keys.extend(lookup.get_packages(package_name, implicit=options.recursive))
-
-    _print_lookup_errors(lookup)
-    print('\n'.join(set(xylem_keys)))
-
 def command_check(lookup, packages, options):
     verbose = options.verbose
     
@@ -469,30 +460,6 @@ def _print_lookup_errors(lookup):
             print("WARNING: unable to locate resource %s"%(str(error.args[0])), file=sys.stderr)
         else:
             print("WARNING: %s"%(str(error)), file=sys.stderr)
-            
-def command_what_needs(args, options):
-    lookup = _get_default_xylemLookup(options)
-    packages = []
-    for xylem_name in args:
-        packages.extend(lookup.get_resources_that_need(xylem_name))
-
-    _print_lookup_errors(lookup)
-    print('\n'.join(set(packages)))
-    
-def command_where_defined(args, options):
-    lookup = _get_default_xylemLookup(options)
-    locations = []
-    for xylem_name in args:
-        locations.extend(lookup.get_views_that_define(xylem_name))
-
-    _print_lookup_errors(lookup)
-    if locations:
-        for location in locations:
-            origin = location[1]
-            print(origin)
-    else:
-        print("ERROR: cannot find definition(s) for [%s]"%(', '.join(args)), file=sys.stderr)
-        return 1
 
 def command_resolve(args, options):
     resolved_pairs, invalid_key_errors, _ = resolve(args, options)
@@ -564,27 +531,16 @@ def get_default_installer(installer_context=None, verbose=False):
 command_handlers = {
     'db': command_db,
     'check': command_check,
-    'keys': command_keys,
     'install': command_install,
-    'what-needs': command_what_needs,
-    'where-defined': command_where_defined,
     'remove': command_remove,
     # TODO: Rename this to "lookup".
     'resolve': command_resolve,
     'init': command_init,
     'update': command_update,
-
-    # backwards compat
-    'what_needs': command_what_needs,
-    'where_defined': command_where_defined,
-    'depdb': command_db, 
     }
 
 # commands that accept args
-_command_xylem_args = [
-    'install', 'remove', 'what-needs', 'what_needs', 'where-defined',
-    'where_defined', 'resolve'
-    ]
+_command_xylem_args = ['install', 'remove', 'resolve']
 
 # commands that take no args
 _command_no_args = ['update', 'init', 'db']
