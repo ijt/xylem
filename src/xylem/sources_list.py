@@ -62,6 +62,9 @@ SOURCES_CACHE_DIR = 'sources.cache'
 # name of index file for sources cache
 CACHE_INDEX = 'index'
 
+class InvalidSourceFile(Exception):
+    pass
+
 def get_sources_list_dir():
     # base of where we read config files from
     # TODO: windows
