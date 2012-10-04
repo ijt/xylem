@@ -37,20 +37,10 @@ __version__ = '0.1.0'
 
 import sys
 
-try:
-    from .installers import InstallerContext, Installer, \
-            PackageManagerInstaller
-    from .core import xylemInternalError, InstallFailed, UnsupportedOs, \
-            InvalidData, DownloadFailure
-    from .model import xylemDatabase, xylemDatabaseEntry
-    from .lookup import xylemDefinition, xylemView, xylemLookup, \
-            ResolutionError
-    from .loader import xylemLoader
-except ImportError:
-    # soft-fail if rospkg not available.  Need this backoff behavior
-    # in order to support setting __version__ in the module.
-    print("failed to load symbols, xylem will not function properly",
-            file=sys.stderr)
+from .installers import InstallerContext, Installer, PackageManagerInstaller
+from .core import xylemInternalError, InstallFailed, UnsupportedOs, \
+    InvalidData, DownloadFailure
+from .model import xylemDatabase, xylemDatabaseEntry
 
 
 def create_default_installer_context(verbose=False):
