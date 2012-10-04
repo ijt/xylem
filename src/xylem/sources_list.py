@@ -37,6 +37,7 @@ import urllib2
 
 from .core import InvalidData, DownloadFailure
 from .gbpdistro_support import download_gbpdistro_as_xylem_data
+from .os_detect import OsDetect
 
 try:
     import urlparse
@@ -225,8 +226,7 @@ class DataSourceMatcher(object):
         """
         distro_name = rospkg.distro.current_distro_codename()
         if os_override is None:
-            os_detect = .os_detect.OsDetect()
-            os_name, _, os_codename = os_detect.detect_os()
+            os_name, _, os_codename = OsDetect().detect_os()
         else:
             os_name, os_codename = os_override
         tags = [t for t in (distro_name, os_name, os_codename) if t]

@@ -42,7 +42,7 @@
 
 import os
 
-from .os_detect import OS_GENTOO
+from ..os_detect import OS_GENTOO
 
 from .source import SOURCE_INSTALLER
 from ..installers import PackageManagerInstaller

@@ -29,7 +29,7 @@
 
 import subprocess
 
-from .os_detect import OS_OPENSUSE
+from ..os_detect import OS_OPENSUSE
 
 from .source import SOURCE_INSTALLER
 from ..installers import PackageManagerInstaller

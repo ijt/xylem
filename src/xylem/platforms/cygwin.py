@@ -30,7 +30,7 @@
 
 from __future__ import print_function
 
-from .os_detect import OS_CYGWIN
+from ..os_detect import OS_CYGWIN
 
 from .source import SOURCE_INSTALLER
 
