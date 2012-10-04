@@ -29,12 +29,8 @@
 
 from __future__ import print_function
 
-import subprocess
-import traceback
-
 from .os_detect import OsDetect
-
-from .core import rd_debug, XylemInternalError, InstallFailed, print_bold, InvalidData
+from .core import InvalidData
 
 # use OsDetect.get_version() for OS version key
 TYPE_VERSION = 'version'

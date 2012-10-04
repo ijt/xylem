@@ -64,15 +64,11 @@ class InvalidSourceFile(Exception):
     pass
 
 def get_sources_list_dir():
-    # base of where we read config files from
-    # TODO: windows
-    if 0:
-        # we can't use etc/ros because environment config does not carry over under sudo
-        etc_ros = rospkg.get_etc_ros_dir()
-    else:
-        etc_ros = '/etc/ros'
+    """
+    Return base location of config files.
+    """
     # compute cache directory
-    return os.path.join(etc_ros, 'xylem', SOURCES_LIST_DIR)
+    return os.path.join('/etc/ros', 'xylem', SOURCES_LIST_DIR)
 
 def get_default_sources_list_file():
     return os.path.join(get_sources_list_dir(), '20-default.list')
