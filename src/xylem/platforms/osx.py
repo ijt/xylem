@@ -30,7 +30,7 @@
 
 import subprocess
 
-from rospkg.os_detect import OS_OSX
+from .os_detect import OS_OSX
 
 from ..core import InstallFailed
 from .pip import PIP_INSTALLER

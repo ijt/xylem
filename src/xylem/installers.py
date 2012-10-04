@@ -32,7 +32,7 @@ from __future__ import print_function
 import subprocess
 import traceback
 
-from rospkg.os_detect import OsDetect
+from .os_detect import OsDetect
 
 from .core import rd_debug, xylemInternalError, InstallFailed, print_bold, InvalidData
 
@@ -47,7 +47,7 @@ TYPE_CODENAME = 'codename'
 # platforms, as well as the resolution of the operating system for a
 # specific machine.  It is possible to decouple those two notions,
 # though there are some touch points over how this interfaces with the
-# rospkg.os_detect library, i.e. how platforms can tweak these
+# .os_detect library, i.e. how platforms can tweak these
 # detectors and how the higher-level APIs can override them.
 class InstallerContext(object):
     """
@@ -59,7 +59,7 @@ class InstallerContext(object):
     def __init__(self, os_detect=None):
         """
         :param os_detect: (optional)
-        :class:`rospkg.os_detect.OsDetect` instance to use for
+        :class:`.os_detect.OsDetect` instance to use for
           detecting platforms.  If `None`, default instance will be
           used.
         """

@@ -37,7 +37,7 @@ def test_create_default_installer_context():
         assert isinstance(context, xylem.InstallerContext)
 
         #this is just a tripwire as the actual value will change over time
-        from rospkg.os_detect import OS_UBUNTU
+        from .os_detect import OS_UBUNTU
         assert OS_UBUNTU in context.get_os_keys()
         assert context.get_installer('apt') is not None
         assert 'apt' in context.get_os_installer_keys(OS_UBUNTU)

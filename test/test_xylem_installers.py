@@ -59,7 +59,7 @@ def get_test_rospkgs():
 
 def test_InstallerContext_ctor():
     from xylem.installers import InstallerContext
-    from rospkg.os_detect import OsDetect
+    from .os_detect import OsDetect
 
     context = InstallerContext()
     assert context.get_os_detect() is not None
@@ -77,7 +77,7 @@ def test_InstallerContext_ctor():
     assert [] == context.get_os_keys()
     
 def test_InstallerContext_get_os_version_type():
-    from rospkg.os_detect import OS_UBUNTU
+    from .os_detect import OS_UBUNTU
     from xylem.installers import InstallerContext, TYPE_CODENAME, TYPE_VERSION
     context = InstallerContext()
 
@@ -104,7 +104,7 @@ def test_InstallerContext_os_version_and_name():
     assert val == context.get_os_name_and_version()
 
     from mock import Mock
-    from rospkg.os_detect import OsDetect
+    from .os_detect import OsDetect
     os_detect_mock = Mock(spec=OsDetect)
     os_detect_mock.get_name.return_value = 'fakeos'
     os_detect_mock.get_version.return_value = 'fakeos-version'
@@ -122,7 +122,7 @@ def test_InstallerContext_os_version_and_name():
     
 def test_InstallerContext_installers():
     from xylem.installers import InstallerContext, Installer
-    from rospkg.os_detect import OsDetect
+    from .os_detect import OsDetect
     detect = OsDetect()
     context = InstallerContext(detect)
     context.verbose = True
@@ -191,7 +191,7 @@ def test_InstallerContext_installers():
 
 def test_InstallerContext_os_installers():
     from xylem.installers import InstallerContext, Installer
-    from rospkg.os_detect import OsDetect
+    from .os_detect import OsDetect
     detect = OsDetect()
     context = InstallerContext(detect)
     context.verbose = True

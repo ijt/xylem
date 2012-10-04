@@ -347,7 +347,7 @@ def test_parse_sources_data():
         
 def test_DataSourceMatcher_create_default():
     distro_name = rospkg.distro.current_distro_codename()
-    os_detect = rospkg.os_detect.OsDetect()
+    os_detect = .os_detect.OsDetect()
     os_name, os_version, os_codename = os_detect.detect_os()
 
     matcher = xylem.sources_list.DataSourceMatcher.create_default()

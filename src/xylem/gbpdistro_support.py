@@ -2,8 +2,8 @@ import urllib2
 import yaml
 import urlparse
 
-from rospkg.os_detect import OS_UBUNTU
-from rospkg.os_detect import OS_OSX
+from .os_detect import OS_UBUNTU
+from .os_detect import OS_OSX
 
 from .core import InvalidData, DownloadFailure
 from .platforms.debian import APT_INSTALLER

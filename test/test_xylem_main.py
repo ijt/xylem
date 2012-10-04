@@ -30,7 +30,7 @@ import sys
 import cStringIO
 
 import rospkg
-import rospkg.os_detect
+import .os_detect
 
 import unittest
 
@@ -107,7 +107,7 @@ class TestxylemMain(unittest.TestCase):
             assert stdout.getvalue().strip() == "All system dependencies have been satisified", stdout.getvalue()
             assert not stderr.getvalue(), stderr.getvalue()
         try:
-            osd = rospkg.os_detect.OsDetect()
+            osd = .os_detect.OsDetect()
             override = "%s:%s"%(osd.get_name(), osd.get_codename())
             with fakeout() as b:
                 xylem_main(['check', 'python_dep', '--os', override]+cmd_extras)

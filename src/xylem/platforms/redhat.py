@@ -30,7 +30,7 @@
 
 import subprocess
 
-from rospkg.os_detect import OS_RHEL, OS_FEDORA
+from .os_detect import OS_RHEL, OS_FEDORA
 
 from .source import SOURCE_INSTALLER
 from ..installers import PackageManagerInstaller

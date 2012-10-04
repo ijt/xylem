@@ -31,16 +31,16 @@ import os
 import traceback
 from mock import Mock, patch
 
-import rospkg.os_detect
+import .os_detect
 
 def is_gentoo():
-    return rospkg.os_detect.Gentoo().is_os()
+    return .os_detect.Gentoo().is_os()
 
 def get_test_dir():
     # not used yet
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'gentoo'))
 
-# Requires 2.7 @unittest.skipIf(not rospkg.os_detect.Gentoo().is_os(), "not running Gentoo")
+# Requires 2.7 @unittest.skipIf(not .os_detect.Gentoo().is_os(), "not running Gentoo")
 def test_portage_available():
     if not is_gentoo():
         print "Skipping not Gentoo"

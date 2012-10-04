@@ -28,7 +28,7 @@
 
 # Author Tully Foote, Ken Conley
 
-from rospkg.os_detect import OS_DEBIAN, OS_UBUNTU
+from .os_detect import OS_DEBIAN, OS_UBUNTU
 
 from .pip import PIP_INSTALLER
 from .gem import GEM_INSTALLER
