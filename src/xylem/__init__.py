@@ -52,13 +52,6 @@ except ImportError:
     print("failed to load symbols, xylem will not function properly",
             file=sys.stderr)
 
-# don't let import error take down code as when attempting to compute version number
-try:
-    from .rospkg_loader import RosPkgLoader
-except ImportError:
-    print("Cannot import rospkg, xylem will not function properly", 
-            file=sys.stderr)
-
 
 def create_default_installer_context(verbose=False):
     from .platforms import arch
