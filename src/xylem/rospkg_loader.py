@@ -34,13 +34,9 @@ filesystem.
 
 from __future__ import print_function
 
-import os
-import yaml
-
 import rospkg
 
-from .loader import xylemLoader, InvalidData, xylem_YAML
-from .sources_list import SourcesListLoader
+from .loader import xylemLoader
 
 # Default view key is the view that packages that are not in stacks
 # see. It is the root of all dependencies.  It is superceded by an

@@ -43,7 +43,6 @@ try:
 except ImportError:
     import urllib.parse as urlparse #py3k
     
-import rospkg
 import rospkg.distro
 
 from .loader import xylemLoader
@@ -229,7 +228,7 @@ class DataSourceMatcher(object):
         distro_name = rospkg.distro.current_distro_codename()
         if os_override is None:
             os_detect = rospkg.os_detect.OsDetect()
-            os_name, os_version, os_codename = os_detect.detect_os()
+            os_name, _, os_codename = os_detect.detect_os()
         else:
             os_name, os_codename = os_override
         tags = [t for t in (distro_name, os_name, os_codename) if t]

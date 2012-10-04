@@ -43,7 +43,7 @@ else:
 
 def read_stdout(cmd):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    std_out, std_err = p.communicate()
+    std_out, _ = p.communicate()
     if python3:
         return std_out.decode()
     else:

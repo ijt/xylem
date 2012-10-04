@@ -32,8 +32,6 @@ from __future__ import print_function
 import sys
 import yaml
 
-from collections import defaultdict
-
 from rospkg import RosPack, RosStack, ResourceNotFound
 
 from .core import xylemInternalError, InvalidData, rd_debug
