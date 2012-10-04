@@ -27,9 +27,6 @@
 
 from __future__ import print_function
 
-import os
-import sys
-
 def test_create_default_installer_context():
     import xylem
     from xylem.installers import TYPE_CODENAME
@@ -39,11 +36,9 @@ def test_create_default_installer_context():
         assert context is not None
         assert isinstance(context, xylem.InstallerContext)
 
-        #this is just tripwire as we actual value will change over time
+        #this is just a tripwire as the actual value will change over time
         from rospkg.os_detect import OS_UBUNTU
         assert OS_UBUNTU in context.get_os_keys()
         assert context.get_installer('apt') is not None
         assert 'apt' in context.get_os_installer_keys(OS_UBUNTU)
         assert TYPE_CODENAME == context.get_os_version_type(OS_UBUNTU)
-    
-    
