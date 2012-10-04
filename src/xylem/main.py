@@ -255,7 +255,6 @@ def _package_args_handler(command, parser, options, args):
             # let the loader filter the -a. This will take out some
             # packages that are catkinized (for now).
             args = loader.get_loadable_resources()
-            not_found = []
     elif not args:
         parser.error("no packages or stacks specified")
 
@@ -413,7 +412,7 @@ def command_db(options):
     for xylem_name in view.keys():
         try:
             d = view.lookup(xylem_name)
-            inst_key, rule = d.get_rule_for_platform(os_name, os_version, installer_keys, default_key)
+            _, rule = d.get_rule_for_platform(os_name, os_version, installer_keys, default_key)
             resolved = installer.resolve(rule)
             resolved_str = " ".join(resolved)
             print ("%s -> %s"%(xylem_name, resolved_str))
