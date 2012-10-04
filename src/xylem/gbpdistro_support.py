@@ -14,7 +14,8 @@ from .rep3 import download_targets_data
 try:
     unicode
 except:
-    basestring = unicode = str
+    unicode = str
+    basestring = str
 
 # location of an example gbpdistro file for reference and testing
 FUERTE_GBPDISTRO_URL = 'https://raw.github.com/ros/rosdistro/' \

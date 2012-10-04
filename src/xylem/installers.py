@@ -468,7 +468,7 @@ class xylemInstaller(object):
         """
         if verbose:
             print("install options: reinstall[%s] simulate[%s] interactive[%s]"%(reinstall, simulate, interactive))
-            print("install: uninstalled keys are %s"%(', '.join([', '.join(pkg) for pkg in [v for k,v in uninstalled]])))
+            print("install: uninstalled keys are %s"%(', '.join([', '.join(pkg) for pkg in uninstalled.keys()])))
 
         # Squash uninstalled again, in case some dependencies were already installed
         squashed_uninstalled = []
