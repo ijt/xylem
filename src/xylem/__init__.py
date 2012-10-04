@@ -38,7 +38,7 @@ __version__ = '0.1.0'
 import sys
 
 from .installers import InstallerContext, Installer, PackageManagerInstaller
-from .core import xylemInternalError, InstallFailed, UnsupportedOs, \
+from .core import XylemInternalError, InstallFailed, UnsupportedOs, \
     InvalidData, DownloadFailure
 from .model import xylemDatabase, xylemDatabaseEntry
 
@@ -76,7 +76,7 @@ def create_default_installer_context(verbose=False):
     return context
 
 __all__ = ['InstallerContext', 'Installer', 'PackageManagerInstaller',
-        'xylemInternalError', 'InstallFailed', 'UnsupportedOs', 'InvalidData',
+        'XylemInternalError', 'InstallFailed', 'UnsupportedOs', 'InvalidData',
         'DownloadFailure',
         'xylemDatabase', 'xylemDatabaseEntry',
         'xylemDefinition', 'xylemView', 'xylemLookup', 'ResolutionError',

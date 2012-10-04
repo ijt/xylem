@@ -47,7 +47,7 @@ import rospkg
 
 from . import create_default_installer_context
 from . import __version__
-from .core import xylemInternalError, UnsupportedOs, InvalidData
+from .core import XylemInternalError, UnsupportedOs, InvalidData
 from .sources_list import update_sources_list, get_sources_cache_dir,\
     download_default_sources_list, CACHE_INDEX,\
     get_sources_list_dir, get_default_sources_list_file,\
@@ -99,7 +99,7 @@ ERROR: xylem cannot find all required resources to answer your query
         print(_usage, file=sys.stderr)
         print("ERROR: %s"%(str(e)), file=sys.stderr)
         sys.exit(os.EX_USAGE)
-    except xylemInternalError as e:
+    except XylemInternalError as e:
         print("""
 ERROR: xylem experienced an internal error.
 Please go to the xylem page [1] and file a bug report with the message below.

@@ -57,7 +57,7 @@ class InvalidData(Exception):
 class UnsupportedOs(Exception):
     pass
     
-class xylemInternalError(Exception):
+class XylemInternalError(Exception):
 
     def __init__(self, e, message=None):
         self.error = e

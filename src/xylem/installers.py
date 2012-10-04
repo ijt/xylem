@@ -34,7 +34,7 @@ import traceback
 
 from .os_detect import OsDetect
 
-from .core import rd_debug, xylemInternalError, InstallFailed, print_bold, InvalidData
+from .core import rd_debug, XylemInternalError, InstallFailed, print_bold, InvalidData
 
 # use OsDetect.get_version() for OS version key
 TYPE_VERSION = 'version'
@@ -400,7 +400,7 @@ class xylemInstaller(object):
 
         :returns: (uninstalled, errors), ``({str: [opaque]}, {str: ResolutionError})``.
           Uninstalled is a dictionary with the installer_key as the key.
-        :raises: :exc:`xylemInternalError`
+        :raises: :exc:`XylemInternalError`
         """
         
         installer_context = self.installer_context
@@ -420,12 +420,12 @@ class xylemInstaller(object):
             try:
                 installer = installer_context.get_installer(installer_key)
             except KeyError as e: # lookup has to be buggy to cause this
-                raise xylemInternalError(e)
+                raise XylemInternalError(e)
             try:
                 packages_to_install = installer.get_packages_to_install(resolved)
             except Exception as e:
                 rd_debug(traceback.format_exc())
-                raise xylemInternalError(e, message="Bad installer [%s]: %s"%(installer_key, e))
+                raise XylemInternalError(e, message="Bad installer [%s]: %s"%(installer_key, e))
 
             # only create key if there is something to do
             if packages_to_install:
