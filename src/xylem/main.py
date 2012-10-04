@@ -73,25 +73,15 @@ xylem db
 
 xylem init
   initialize xylem sources in /etc/ros/xylem.  May require sudo.
-  
-xylem keys <packages>...
-  list the xylem keys that the packages depend on.
 
-xylem remove <packages>
+xylem remove <packages>...
+  uninstall packages
 
 xylem resolve <packages>
   resolve <packages> to system dependencies
   
 xylem update
   update the local xylem database based on the xylem sources.
-  
-xylem what-needs <packages>...
-  print a list of packages that declare a xylem on (at least
-  one of) <packages>
-
-xylem where-defined <packages>...
-  print a list of yaml files that declare a xylem on (at least
-  one of) <packages>
 """
 
 def _get_default_xylemLookup(options):
