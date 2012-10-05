@@ -371,6 +371,3 @@ _command_xylem_args = ['check', 'install', 'remove', 'resolve']
 _command_no_args = ['update', 'init', 'db']
 
 _commands = command_handlers.keys()
-
-
-
