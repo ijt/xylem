@@ -36,8 +36,8 @@ import hashlib
 
 import yaml
 
-from ..core import rd_debug, InvalidData
-from ..installers import PackageManagerInstaller, InstallFailed
+from ..core import rd_debug, InvalidData, InstallFailed
+from ..installers import PackageManagerInstaller
 from ..shell_utils import create_tempfile_from_string_and_execute
 
 SOURCE_INSTALLER='source'
