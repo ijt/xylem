@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 import sys
 sys.path.insert(0, 'src')
