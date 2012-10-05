@@ -35,12 +35,10 @@ from __future__ import print_function
 
 __version__ = '0.1.0'
 
-import sys
-
 from .installers import InstallerContext, Installer, PackageManagerInstaller
 from .core import XylemInternalError, InstallFailed, UnsupportedOs, \
     InvalidData, DownloadFailure
-from .model import xylemDatabase, xylemDatabaseEntry
+from .model import XylemDatabase, XylemDatabaseEntry
 
 
 def create_default_installer_context(verbose=False):
@@ -78,8 +76,7 @@ def create_default_installer_context(verbose=False):
 __all__ = ['InstallerContext', 'Installer', 'PackageManagerInstaller',
         'XylemInternalError', 'InstallFailed', 'UnsupportedOs', 'InvalidData',
         'DownloadFailure',
-        'xylemDatabase', 'xylemDatabaseEntry',
-        'xylemDefinition', 'xylemView', 'xylemLookup', 'ResolutionError',
-        'xylemLoader', 'RosPkgLoader',
+        'XylemDatabase', 'XylemDatabaseEntry',
         'create_default_installer_context',
         ]
+

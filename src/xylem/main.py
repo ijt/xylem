@@ -48,10 +48,14 @@ import rospkg
 from . import create_default_installer_context
 from . import __version__
 from .core import XylemInternalError, UnsupportedOs, InvalidData
+from .lookup import XylemLookup
 from .sources_list import update_sources_list, get_sources_cache_dir,\
     download_default_sources_list, CACHE_INDEX,\
     get_sources_list_dir, get_default_sources_list_file,\
     DEFAULT_SOURCES_LIST_URL
+from xylem.sources_list import SourcesListLoader
+
+DEFAULT_VIEW_KEY = '*default*'
 
 class UsageError(Exception):
     pass
@@ -156,10 +160,14 @@ ERROR: your xylem installation has not been initialized yet.  Please run:
         return True
     
 def _xylem_main(args):
+    default_sources_cache = get_sources_cache_dir()
+
     # sources cache dir is our local database.  
     parser = OptionParser(usage=_usage, prog='xylem')
     parser.add_option("--os", dest="os_override", default=None,
                       metavar="OS_NAME:OS_VERSION", help="Override OS name and version (colon-separated), e.g. ubuntu:lucid")
+    parser.add_option("-c", "--sources-cache-dir", dest="sources_cache_dir", default=default_sources_cache,
+                      metavar='SOURCES_CACHE_DIR', help="Override %s"%(default_sources_cache))
     parser.add_option("--verbose", "-v", dest="verbose", default=False, 
                       action="store_true", help="verbose display")
     parser.add_option("--version", dest="print_version", default=False, 
@@ -323,16 +331,60 @@ def command_resolve(args, options):
     return 0
 
 def resolve(args, options):
+    resolved_pairs, invalid_key_errors, lookup_errors = dirty_resolve(args,
+                                                                     options)
+    return [p for rule, pkgs in resolved_pairs for p in pkgs]
+
+def dirty_resolve(args, options):
     """
     Resolve os-specific package names from xylem package names.
 
-    :returns: list of system-specific package names
+    :returns: resolved_pairs, invalid_key_errors, lookup_errors
     """
+    lookup = _get_default_xylemLookup(options)
     installer_context = create_default_installer_context(verbose=options.verbose)
     configure_installer_context_os(installer_context, options)
-    installer, _, _, _, _ = get_default_installer(installer_context=installer_context,
-                                                  verbose=options.verbose)
-    return [syspkg for xpkg in args for syspkg in installer.resolve(xpkg)]
+
+    installer, installer_keys, default_key, \
+            os_name, os_version = get_default_installer(installer_context=installer_context,
+                                                        verbose=options.verbose)
+    invalid_key_errors = []
+    resolved_pairs = []
+    for xylem_name in args:
+        if len(args) > 1:
+            print("#xylem[%s]"%xylem_name)
+
+        view = lookup.get_xylem_view(DEFAULT_VIEW_KEY, verbose=options.verbose)
+        try:
+            d = view.lookup(xylem_name)
+        except KeyError as e:
+            print("ERROR: no xylem rule for %s" % error_to_human_readable(e),
+                file=sys.stderr)        
+            invalid_key_errors.append(e)
+            continue
+        rule_installer, rule = d.get_rule_for_platform(os_name, os_version, installer_keys, default_key)
+
+        installer = installer_context.get_installer(rule_installer)
+        resolved = installer.resolve(rule)
+        resolved_pairs.append((rule_installer, resolved))
+
+    for error in lookup.get_errors():
+        print("WARNING: %s"%(error_to_human_readable(error)), file=sys.stderr)
+
+    return resolved_pairs, invalid_key_errors, lookup.get_errors()
+
+def _get_default_xylemLookup(options):
+    """
+    Helper routine for converting command-line options into
+    appropriate XylemLookup instance.
+    """
+    os_override = convert_os_override_option(options.os_override)
+    sources_loader = SourcesListLoader.create_default(sources_cache_dir=options.sources_cache_dir,
+                                                      os_override=os_override,
+                                                      verbose=options.verbose)
+    lookup = XylemLookup.create_from_rospkg(sources_loader=sources_loader)
+    lookup.verbose = options.verbose
+    return lookup
 
 def get_default_installer(installer_context=None, verbose=False):
     """

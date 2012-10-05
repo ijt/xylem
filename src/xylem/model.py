@@ -38,7 +38,7 @@ combine these xylem dependency maps and view dependencies together
 into a combined view on which queries can be made.
 """
 
-class xylemDatabaseEntry(object):
+class XylemDatabaseEntry(object):
     """
     Stores xylem data and metadata for a single view.
     """
@@ -53,13 +53,13 @@ class xylemDatabaseEntry(object):
         self.view_dependencies = view_dependencies
         self.origin = origin
                 
-class xylemDatabase(object):
+class XylemDatabase(object):
     """
     Stores loaded xylem data for multiple views.
     """
     
     def __init__(self):
-        self._xylem_db = {} # {view_name: xylemDatabaseEntry}
+        self._xylem_db = {} # {view_name: XylemDatabaseEntry}
 
     def is_loaded(self, view_name):
         """
@@ -80,13 +80,13 @@ class xylemDatabase(object):
     def set_view_data(self, view_name, xylem_data, view_dependencies, origin):
         """
         Set data associated with view.  This will create a new
-        :class:`xylemDatabaseEntry`.
+        :class:`XylemDatabaseEntry`.
 
         :param xylem_data: xylem data map to associated with view.
           This will be copied.
         :param origin: origin of view data, e.g. filepath of ``xylem.yaml``
         """
-        self._xylem_db[view_name] = xylemDatabaseEntry(xylem_data.copy(), view_dependencies, origin)
+        self._xylem_db[view_name] = XylemDatabaseEntry(xylem_data.copy(), view_dependencies, origin)
 
     def get_view_names(self):
         """
@@ -96,7 +96,7 @@ class xylemDatabase(object):
     
     def get_view_data(self, view_name):
         """
-        :returns: :class:`xylemDatabaseEntry` of given view.
+        :returns: :class:`XylemDatabaseEntry` of given view.
 
         :raises: :exc:`KeyError` if no entry for *view_name*
         """

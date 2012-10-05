@@ -37,6 +37,7 @@ import urllib2
 
 from .core import InvalidData, DownloadFailure
 from .gbpdistro_support import download_gbpdistro_as_xylem_data
+from .loader import XylemLoader
 from .os_detect import OsDetect
 
 try:
@@ -439,3 +440,106 @@ def write_cache_file(source_cache_d, filename_key, xylem_data):
     with open(filepath, 'w') as f:
         f.write(yaml.safe_dump(xylem_data))
     return filepath
+
+
+class SourcesListLoader(XylemLoader):
+    """
+    SourcesList loader implements the general xylemLoader API.  This
+    implementation is fairly simple as there is only one view the
+    source list loader can create.  It is also a bit degenerate as it
+    is not capable of mapping resource names to views, thus any
+    resource-name-based API fails or returns nothing interesting.
+
+    This loader should not be used directly; instead, it is more
+    useful composed with other higher-level implementations, like the
+    :class:`xylem.rospkg_loader.RospkgLoader`.  The general intent
+    is to compose it with another loader by making all of the other
+    loader's views depends on all the views in this loader.
+    """
+
+    ALL_VIEW_KEY = 'sources.list'
+
+    def __init__(self, sources):
+        """
+        :param sources: cached sources list entries, [:class:`CachedDataSource`]
+        """
+        self.sources = sources
+
+    @staticmethod
+    def create_default(matcher=None, sources_cache_dir=None, os_override=None, verbose=False):
+        """
+        :param matcher: override DataSourceMatcher.  Defaults to
+            DataSourceMatcher.create_default().
+        :param sources_cache_dir: override location of sources cache
+        """
+        if matcher is None:
+            matcher = DataSourceMatcher.create_default(os_override=os_override)
+        if verbose:
+            print("using matcher with tags [%s]"%(', '.join(matcher.tags)), file=sys.stderr)
+            
+        sources = load_cached_sources_list(sources_cache_dir=sources_cache_dir, verbose=verbose)
+        if verbose:
+            print("loaded %s sources"%(len(sources)), file=sys.stderr)
+        sources = [x for x in sources if matcher.matches(x)]
+        if verbose:
+            print("%s sources match current tags"%(len(sources)), file=sys.stderr)
+        return SourcesListLoader(sources)
+        
+    def load_view(self, view_name, xylem_db, verbose=False):
+        """
+        Load view data into xylem_db. If the view has already been
+        loaded into xylem_db, this method does nothing.
+
+        :param view_name: name of ROS stack to load, ``str``
+        :param xylem_db: database to load stack data into, :class:`xylemDatabase`
+
+        :raises: :exc:`InvalidData`
+        """
+        if xylem_db.is_loaded(view_name):
+            return
+        source = self.get_source(view_name)
+        if verbose:
+            print("loading view [%s] with sources.list loader"%(view_name), file=sys.stderr)
+        view_dependencies = self.get_view_dependencies(view_name)
+        xylem_db.set_view_data(view_name, source.xylem_data, view_dependencies, view_name)
+
+    def get_loadable_resources(self):
+        return []
+
+    def get_loadable_views(self):
+        return [x.url for x in self.sources]
+
+    def get_view_dependencies(self, view_name):
+        # use dependencies to implement precedence
+        if view_name != SourcesListLoader.ALL_VIEW_KEY:
+            # if the view_name matches one of our sources, return
+            # empty list as none of our sources has deps.
+            if any([x for x in self.sources if view_name == x.url]):
+                return []
+
+        # not one of our views, so it depends on everything we provide
+        return [x.url for x in self.sources]
+    
+    def get_source(self, view_name):
+        matches = [x for x in self.sources if x.url == view_name]
+        if matches:
+            return matches[0]
+        else:
+            raise rospkg.ResourceNotFound(view_name)
+
+    def get_packages(self, resource_name, implicit=True):
+        """
+        Always raises as SourceListLoader defines no concrete resources with packages.
+        
+        :raises: :exc:`rospkg.ResourceNotFound`
+        """
+        raise rospkg.ResourceNotFound(resource_name)
+    
+    def get_view_key(self, resource_name):
+        """
+        Always raises as SourceListLoader defines no concrete resources with packages.
+
+        :returns: Name of view that *resource_name* is in, ``None`` if no associated view.
+        :raises: :exc:`rospkg.ResourceNotFound` if *resource_name* cannot be found.
+        """
+        raise rospkg.ResourceNotFound(resource_name)
