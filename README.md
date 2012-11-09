@@ -11,7 +11,7 @@ From this directory:
 
 Usage
 -----
-To install octave, run
+As an example, you can install octave by running
 
     xylem install octave
 
