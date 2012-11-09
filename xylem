@@ -17,6 +17,10 @@ def main():
     subprocess.call(sudo_part + [pkg_mgr['path']] + sys.argv[1:])
 
 def get_pkg_mgr():
+    """
+    Returns the first package manager found on the system, or exits.
+    The returned value is an entry from the PKG_MGRS list.
+    """
     mgrs = [p for p in PKG_MGRS if os.path.isfile(p['path'])]
     if mgrs:
         return mgrs[0]
