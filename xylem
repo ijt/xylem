@@ -5,22 +5,24 @@ import os.path
 import sys
 import subprocess
 
+# Each row is of the form (path, requires_sudo)
 PKG_MGRS = [
-    '/usr/bin/apt',
-    '/usr/local/bin/brew'
+    {'path': '/usr/bin/apt-get',    'sudo': True},
+    {'path': '/usr/local/bin/brew', 'sudo': False}
 ]
 
 def main():
     pkg_mgr = get_pkg_mgr()
-    subprocess.call([pkg_mgr] + sys.argv[1:])
+    sudo_part = ['sudo'] if pkg_mgr['sudo'] else []
+    subprocess.call(sudo_part + [pkg_mgr['path']] + sys.argv[1:])
 
 def get_pkg_mgr():
-    mgrs = [p for p in PKG_MGRS if os.path.isfile(p)]
+    mgrs = [p for p in PKG_MGRS if os.path.isfile(p['path'])]
     if mgrs:
         return mgrs[0]
     else:
         print('No supported package manager found. Expected one of', 
-              ', '.join(PKG_MGRS))
+              ', '.join([p['path'] for p in PKG_MGRS]))
         sys.exit(1)
 
 if __name__ == '__main__': 
