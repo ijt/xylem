@@ -8,6 +8,5 @@ setup(name='xylem',
       author='Issac Trotts',
       author_email='itrotts@willowgarage.com',
       scripts=['xylem'],
-      url='http://github.com/ijt/xylem',
-      packages=['xylem'])
+      url='http://github.com/ijt/xylem')
 
